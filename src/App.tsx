@@ -27,59 +27,50 @@ export const supabase = {
     })
 };
 
-export function LogoMark({ className = "w-10 h-10" }) {
+export function LogoMark({ className = "w-16 h-16" }) {
     return (
-        <div className={`${className} rounded-2xl bg-[#1E293B] ring-1 ring-white/10 p-1.5 flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] shrink-0`}>
-            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" aria-label="NeuraLink Studio">
-                <defs>
-                    <linearGradient id="nlGrad" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" stopColor="#8B5CF6" />
-                        <stop offset="1" stopColor="#06B6D4" />
-                    </linearGradient>
-                </defs>
-
-                {/* Línea que conecta las dos mentes */}
-                <line x1="9" y1="24" x2="39" y2="24" stroke="url(#nlGrad)" strokeWidth="2.4" strokeLinecap="round" />
-
-                {/* El vínculo = un lápiz (el acto de crear) */}
-                <g transform="rotate(-45 24 24)">
-                    <rect x="13" y="21" width="3.2" height="6" rx="1.2" fill="url(#nlGrad)" />
-                    <rect x="16.2" y="21" width="12.8" height="6" rx="1.2" fill="url(#nlGrad)" />
-                    <path d="M29 21 L34 24 L29 27 Z" fill="url(#nlGrad)" />
-                    <path d="M31.4 22.6 L34 24 L31.4 25.4 Z" fill="#0B1220" />
-                    <line x1="16.2" y1="21" x2="16.2" y2="27" stroke="#0B1220" strokeWidth="1.1" />
-                    <line x1="29" y1="21" x2="29" y2="27" stroke="#0B1220" strokeWidth="1.1" />
-                </g>
-
-                {/* Los dos nodos / mentes conectadas */}
-                <circle cx="9" cy="24" r="3.6" fill="url(#nlGrad)" />
-                <circle cx="39" cy="24" r="3.6" fill="url(#nlGrad)" />
-            </svg>
+        <div className={`${className} rounded-3xl bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-cyan-400 p-1 shadow-[0_0_60px_rgba(217,70,239,0.9)] ring-4 ring-cyan-300 flex items-center justify-center shrink-0 relative group animate-pulse`}>
+            <div className="absolute inset-0 bg-fuchsia-500 rounded-3xl blur-2xl opacity-80 animate-ping"></div>
+            <div className="w-full h-full bg-[#030712] rounded-[22px] flex items-center justify-center p-3 relative z-10">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full filter drop-shadow-[0_0_20px_rgba(6,182,212,1)]">
+                    <defs>
+                        <linearGradient id="nlSuperGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                            <stop offset="0" stopColor="#C084FC" />
+                            <stop offset="0.5" stopColor="#F472B6" />
+                            <stop offset="1" stopColor="#22D3EE" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="24" cy="24" r="20" stroke="url(#nlSuperGrad)" strokeWidth="4.5" strokeDasharray="8 4" />
+                    <circle cx="24" cy="24" r="8" fill="url(#nlSuperGrad)" />
+                    <path d="M12 24H36" stroke="#FFF" strokeWidth="5" strokeLinecap="round" />
+                    <path d="M24 12V36" stroke="#FFF" strokeWidth="5" strokeLinecap="round" />
+                </svg>
+            </div>
         </div>
     );
 }
 
 export function Logo({ withTagline = false }) {
     return (
-        <div className="flex items-center gap-3 select-none">
-            <LogoMark className="w-10 h-10" />
+        <div className="flex items-center gap-4 select-none group cursor-pointer">
+            <LogoMark className="w-16 h-16" />
             <div className="leading-tight">
-                <div className="flex items-baseline gap-1.5">
-                    <span className="font-extrabold text-base lg:text-lg tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+                <div className="flex items-center gap-3">
+                    <span className="font-black text-2xl lg:text-3xl tracking-tight bg-gradient-to-r from-violet-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(139,92,246,0.9)]">
                         NeuraLink
                     </span>
-                    <span className="font-mono text-[11px] lg:text-xs text-slate-400 border border-white/10 rounded-md px-1.5 py-0.5">
-                        Studio
+                    <span className="font-mono text-xs font-black bg-gradient-to-r from-violet-600 to-cyan-500 text-white rounded-xl px-3 py-1 shadow-[0_0_20px_rgba(6,182,212,0.9)] uppercase tracking-wider">
+                        STUDIO V2
                     </span>
                 </div>
                 {withTagline ? (
-                    <p className="text-[10px] text-cyan-400/80 font-medium mt-0.5 tracking-wide">
-                        Conectando mentes, creando apps
+                    <p className="text-xs text-cyan-300 font-extrabold tracking-wide mt-1.5 drop-shadow-[0_0_15px_rgba(6,182,212,0.9)] flex items-center gap-1.5">
+                        <span>⚡</span> Conectando mentes, creando apps avanzadas
                     </p>
                 ) : (
-                    <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                        Sincronización neural activa
+                    <p className="text-[11px] text-slate-300 font-semibold flex items-center gap-1.5 mt-1">
+                        <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping shadow-[0_0_15px_rgba(6,182,212,1)]" />
+                        Núcleo Neural Cuántico Activo
                     </p>
                 )}
             </div>
@@ -107,19 +98,8 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
         case 'Send': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>;
         case 'Volume2': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>;
         case 'Rocket': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 3 0 3 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-3 0-3"/></svg>;
-        case 'Copy': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>;
-        case 'Trash2': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>;
-        case 'Smartphone': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>;
-        case 'Download': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
         case 'Monitor': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>;
         case 'X': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>;
-        case 'Check': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>;
-        case 'Clock': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
-        case 'Plus': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>;
-        case 'ArrowRight': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>;
-        case 'ArrowLeft': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="19" x2="5" y1="12" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>;
-        case 'UserCog': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><circle cx="19" cy="11" r="2"/><path d="M19 8v1"/><path d="M19 13v1"/><path d="M21.5 9.5h-1"/><path d="M17.5 12.5h-1"/></svg>;
-        case 'ImageIcon': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>;
         case 'Layout': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>;
         default: return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>;
     }
@@ -203,26 +183,6 @@ const callGeminiAPI = async (specialist, messages, images = [], currentCode = ''
     return data.candidates?.[0]?.content?.parts?.[0]?.text || '(Sin respuesta del especialista)';
 };
 
-const generateConceptImage = async (promptText, apiKey = '') => {
-    const key = apiKey || localStorage.getItem('neuralink_gemini_key') || '';
-    if (!key) throw new Error('Se requiere API Key para generar imágenes.');
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${key}`;
-    const payload = {
-        instances: { prompt: `Futuristic cyberpunk sci-fi UI design concept, glowing cyan and violet neon accents, extreme glassmorphism: ${promptText}` },
-        parameters: { sampleCount: 1 }
-    };
-    const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-    const result = await res.json();
-    if (result.predictions && result.predictions[0]?.bytesBase64Encoded) {
-        return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
-    }
-    throw new Error('No se pudo generar la imagen conceptual.');
-};
-
 const fileToBase64 = (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve({ data: reader.result.split(',')[1], mime: file.type });
@@ -271,13 +231,6 @@ export default function App() {
             ];
         } catch(e) { return []; }
     });
-    
-    const [generatedConcepts, setGeneratedConcepts] = useState(() => {
-        try {
-            const saved = localStorage.getItem('neuralink_neural_concepts');
-            return saved ? JSON.parse(saved) : [];
-        } catch(e) { return []; }
-    });
 
     const [sandboxCode, setSandboxCode] = useState(() => {
         return localStorage.getItem('neuralink_neural_code') || `<!DOCTYPE html>
@@ -296,26 +249,19 @@ export default function App() {
         <div class="w-16 h-16 bg-violet-500/20 text-violet-400 rounded-2xl mx-auto flex items-center justify-center text-3xl">🧠</div>
         <h1 class="text-3xl font-extrabold text-white">NeuraLink Studio</h1>
         <p class="text-slate-300 text-sm">Conectando mentes, creando apps. Tu PWA conectada a Supabase está lista y operativa.</p>
-        <button onclick="alert('¡Conexión a Supabase establecida exitosamente en NeuraLink Studio!')" class="w-full py-3 px-6 bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all">Probar Supabase</button>
+        <button onclick="alert('¡Conexión a Supabase establecida exitosamente!')" class="w-full py-3 px-6 bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all">Probar Supabase</button>
     </div>
 </body>
 </html>`;
     });
 
     const [previewCode, setPreviewCode] = useState(sandboxCode);
-
-    const [wizardStep, setWizardStep] = useState(1);
-    const [wizardData, setWizardData] = useState({ business: '', action: '', style: '', features: '' });
-    const [masterPromptResult, setMasterPromptResult] = useState('');
-
     const [inputMsg, setInputMsg] = useState('');
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
-    const [customModalText, setCustomModalText] = useState('');
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isListening, setIsListening] = useState(false);
-    const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
     useEffect(() => {
         try { localStorage.setItem('neuralink_neural_chats', JSON.stringify(chats)); } catch(e) {}
@@ -324,10 +270,6 @@ export default function App() {
     useEffect(() => {
         try { localStorage.setItem('neuralink_neural_tasks', JSON.stringify(tasks)); } catch(e) {}
     }, [tasks]);
-
-    useEffect(() => {
-        try { localStorage.setItem('neuralink_neural_concepts', JSON.stringify(generatedConcepts)); } catch(e) {}
-    }, [generatedConcepts]);
 
     useEffect(() => {
         try { localStorage.setItem('neuralink_neural_code', sandboxCode); } catch(e) {}
@@ -359,10 +301,7 @@ export default function App() {
 
     const toggleVoiceRecognition = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            setCustomModalText('Tu navegador no soporta reconocimiento de voz nativo.');
-            return;
-        }
+        if (!SpeechRecognition) return;
         if (isListening) {
             setIsListening(false);
             return;
@@ -383,7 +322,6 @@ export default function App() {
             recognition.start();
         } catch(e) {
             setIsListening(false);
-            setCustomModalText('No se pudo iniciar el reconocimiento de voz.');
         }
     };
 
@@ -445,9 +383,6 @@ export default function App() {
         if (codeMatch && codeMatch[1]) {
             setSandboxCode(codeMatch[1]);
             setActiveTab('editor');
-            setCustomModalText('¡Código aplicado exitosamente a NeuraLink Studio!');
-        } else {
-            setCustomModalText('No se encontró bloque de código HTML ejecutable en este mensaje.');
         }
     };
 
@@ -472,10 +407,8 @@ export default function App() {
                 <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] animate-[pulse_8s_ease-in-out_infinite]" style={{ animationDelay: '4s' }}></div>
             </div>
 
-            {}
             <header className="sticky top-0 z-40 bg-[#020617]/85 backdrop-blur-2xl saturate-150 border-b border-white/5 shrink-0">
                 <div className="mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
-                    
                     <div className="cursor-pointer" onClick={() => setActiveTab('home')}>
                         <Logo />
                     </div>
@@ -486,9 +419,6 @@ export default function App() {
                         </button>
                         <button onClick={() => setActiveTab('chat')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'chat' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
                             <Icon name="MessageSquare" className="w-4 h-4" /> Chat Neural
-                        </button>
-                        <button onClick={() => setActiveTab('kanban')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'kanban' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
-                            <Icon name="Kanban" className="w-4 h-4" /> Kanban
                         </button>
                         <button onClick={() => setActiveTab('editor')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'editor' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
                             <Icon name="Code2" className="w-4 h-4" /> Forja & PWA
@@ -504,35 +434,31 @@ export default function App() {
                             <span className="text-xs text-violet-300 font-medium">Supabase Cloud</span>
                         </div>
 
-                        <button onClick={() => setShowSyncModal(true)} className="bg-slate-900/40 hover:bg-slate-800/60 border border-white/5 text-xs px-3 py-2.5 rounded-xl font-mono text-cyan-400 transition-all flex items-center gap-1.5 backdrop-blur-xl">
-                            <Icon name="Cloud" className="w-4 h-4" /> <span className="hidden sm:inline">Token:</span> <strong className="text-white">{syncToken}</strong>
-                        </button>
-                        <button onClick={() => setShowKeyModal(true)} className="bg-slate-900/40 hover:bg-slate-800/60 border border-white/5 text-xs px-3 py-2.5 rounded-xl font-medium text-slate-300 hover:text-white transition-all flex items-center gap-1.5 backdrop-blur-xl">
-                            <Icon name="Key" className="w-4 h-4" /> <span className="hidden sm:inline">Clave API</span>
+                        <button onClick={() => setShowKeyModal(true)} className="bg-slate-900/40 hover:bg-slate-800/60 border border-white/5 text-xs px-3.5 py-2.5 rounded-xl font-bold text-slate-100 hover:text-white transition-all flex items-center gap-2 backdrop-blur-xl shadow-lg">
+                            <Icon name="Key" className="w-4 h-4 text-cyan-400" /> Clave API
                         </button>
                     </div>
                 </div>
             </header>
 
-            {}
             <div className="flex-1 flex overflow-hidden relative w-full pb-16 xl:pb-0 z-10">
                 {activeTab === 'home' && (
                     <div className="flex-1 overflow-y-auto scroll-smooth bg-transparent w-full animate-fade-in p-6">
                         <section className="max-w-5xl mx-auto pt-12 pb-8 text-center space-y-6">
-                            <div className="flex justify-center mb-2">
+                            <div className="flex justify-center mb-4">
                                 <Logo withTagline />
                             </div>
                             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mt-4">
-                                Crea apps conectando <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">mentes y código</span>
+                                Crea apps conectando <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">mentes y código</span>
                             </h1>
                             <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
                                 Tu estudio neural con Supabase integrado. Diseña, chatea con especialistas autónomos y genera aplicaciones PWA listas para producción en segundos.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 pt-4">
-                                <button onClick={() => setActiveTab('chat')} className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white font-bold px-8 py-4 rounded-2xl shadow-[0_0_25px_rgba(139,92,246,0.4)] transition-all flex items-center gap-2">
+                                <button onClick={() => setActiveTab('chat')} className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:opacity-90 text-white font-bold px-8 py-4 rounded-2xl shadow-[0_0_30px_rgba(217,70,239,0.5)] transition-all flex items-center gap-2">
                                     <Icon name="MessageSquare" className="w-5 h-5" /> Entrar al Chat Neural
                                 </button>
-                                <button onClick={() => setActiveTab('editor')} className="bg-slate-900/40 hover:bg-slate-800/60 text-slate-300 border border-white/5 px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-2 backdrop-blur-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+                                <button onClick={() => setActiveTab('editor')} className="bg-slate-900/60 hover:bg-slate-800/80 text-slate-200 border border-white/10 px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-2 backdrop-blur-2xl shadow-xl">
                                     <Icon name="Code2" className="w-5 h-5 text-violet-400" /> Abrir Forja PWA
                                 </button>
                             </div>
@@ -554,7 +480,7 @@ export default function App() {
                                         <button 
                                             key={spec.id} 
                                             onClick={() => { setActiveSpecialist(spec.id); setSidebarOpen(false); }}
-                                            className={`w-full text-left p-3 rounded-2xl transition-all flex items-center gap-3 relative bg-slate-900/40 backdrop-blur-2xl border ${activeSpecialist === spec.id ? 'border-violet-500/50 shadow-[0_0_15px_rgba(139,92,246,0.15)]' : 'border-white/5 hover:border-white/10'}`}
+                                            className={`w-full text-left p-3 rounded-2xl transition-all flex items-center gap-3 relative bg-slate-900/40 backdrop-blur-2xl border ${activeSpecialist === spec.id ? 'border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.2)]' : 'border-white/5 hover:border-white/10'}`}
                                         >
                                             <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0">
                                                 <Icon name={spec.icon} className="w-5 h-5" />
