@@ -27,55 +27,80 @@ export const supabase = {
     })
 };
 
-export function LogoMark({ className = "w-16 h-16" }) {
-    return (
-        <div className={`${className} rounded-3xl bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-cyan-400 p-1 shadow-[0_0_60px_rgba(217,70,239,0.9)] ring-4 ring-cyan-300 flex items-center justify-center shrink-0 relative group animate-pulse`}>
-            <div className="absolute inset-0 bg-fuchsia-500 rounded-3xl blur-2xl opacity-80 animate-ping"></div>
-            <div className="w-full h-full bg-[#030712] rounded-[22px] flex items-center justify-center p-3 relative z-10">
-                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full filter drop-shadow-[0_0_20px_rgba(6,182,212,1)]">
-                    <defs>
-                        <linearGradient id="nlSuperGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-                            <stop offset="0" stopColor="#C084FC" />
-                            <stop offset="0.5" stopColor="#F472B6" />
-                            <stop offset="1" stopColor="#22D3EE" />
-                        </linearGradient>
-                    </defs>
-                    <circle cx="24" cy="24" r="20" stroke="url(#nlSuperGrad)" strokeWidth="4.5" strokeDasharray="8 4" />
-                    <circle cx="24" cy="24" r="8" fill="url(#nlSuperGrad)" />
-                    <path d="M12 24H36" stroke="#FFF" strokeWidth="5" strokeLinecap="round" />
-                    <path d="M24 12V36" stroke="#FFF" strokeWidth="5" strokeLinecap="round" />
-                </svg>
-            </div>
-        </div>
-    );
+// --- NUEVO LOGO INTEGRADO (Variante: Synapse por defecto) ---
+export function LogoMark({ variant = "synapse", className = "w-10 h-10" }) {
+  const gid = `nl-${variant}`;
+  return (
+    <div className={`${className} rounded-2xl bg-[#1E293B] ring-1 ring-white/10 p-1.5 flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] shrink-0`}>
+      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" aria-label="NeuraLink Studio">
+        <defs>
+          <linearGradient id={gid} x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stopColor="#8B5CF6" />
+            <stop offset="1" stopColor="#06B6D4" />
+          </linearGradient>
+        </defs>
+
+        {variant === "portal" && (
+          <>
+            <polygon points="24,10 36.12,17 36.12,31 24,38 11.88,31 11.88,17" stroke={`url(#${gid})`} strokeWidth="2.4" strokeLinejoin="round" />
+            <line x1="24" y1="24" x2="24" y2="10" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
+            <line x1="24" y1="24" x2="36.12" y2="31" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
+            <line x1="24" y1="24" x2="11.88" y2="31" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
+            <circle cx="24" cy="24" r="4" fill={`url(#${gid})`} />
+          </>
+        )}
+
+        {variant === "synapse" && (
+          <>
+            <line x1="24" y1="24" x2="24" y2="9"  stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+            <line x1="24" y1="24" x2="11" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+            <line x1="24" y1="24" x2="37" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+            <line x1="24" y1="24" x2="38" y2="14" stroke={`url(#${gid})`} strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
+            <circle cx="24" cy="9"  r="3"   fill={`url(#${gid})`} />
+            <circle cx="11" cy="32" r="3"   fill={`url(#${gid})`} />
+            <circle cx="37" cy="32" r="3"   fill={`url(#${gid})`} />
+            <circle cx="38" cy="14" r="2"   fill={`url(#${gid})`} />
+            <circle cx="24" cy="24" r="4.5" fill={`url(#${gid})`} />
+          </>
+        )}
+
+        {variant === "nexus" && (
+          <>
+            <line x1="11" y1="24" x2="37" y2="24" stroke={`url(#${gid})`} strokeWidth="2.4" strokeLinecap="round" />
+            <circle cx="11" cy="24" r="4" fill={`url(#${gid})`} />
+            <circle cx="37" cy="24" r="4" fill={`url(#${gid})`} />
+            <path d="M24 19 L29 24 L24 29 L19 24 Z" fill={`url(#${gid})`} />
+            <path d="M24 21.6 L26.4 24 L24 26.4 L21.6 24 Z" fill="#0B1220" />
+          </>
+        )}
+      </svg>
+    </div>
+  );
 }
 
 export function Logo({ withTagline = false }) {
-    return (
-        <div className="flex items-center gap-4 select-none group cursor-pointer">
-            <LogoMark className="w-16 h-16" />
-            <div className="leading-tight">
-                <div className="flex items-center gap-3">
-                    <span className="font-black text-2xl lg:text-3xl tracking-tight bg-gradient-to-r from-violet-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(139,92,246,0.9)]">
-                        NeuraLink
-                    </span>
-                    <span className="font-mono text-xs font-black bg-gradient-to-r from-violet-600 to-cyan-500 text-white rounded-xl px-3 py-1 shadow-[0_0_20px_rgba(6,182,212,0.9)] uppercase tracking-wider">
-                        STUDIO V2
-                    </span>
-                </div>
-                {withTagline ? (
-                    <p className="text-xs text-cyan-300 font-extrabold tracking-wide mt-1.5 drop-shadow-[0_0_15px_rgba(6,182,212,0.9)] flex items-center gap-1.5">
-                        <span>⚡</span> Conectando mentes, creando apps avanzadas
-                    </p>
-                ) : (
-                    <p className="text-[11px] text-slate-300 font-semibold flex items-center gap-1.5 mt-1">
-                        <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping shadow-[0_0_15px_rgba(6,182,212,1)]" />
-                        Núcleo Neural Cuántico Activo
-                    </p>
-                )}
-            </div>
+  return (
+    <div className="flex items-center gap-3 select-none">
+      <LogoMark variant="synapse" className="w-10 h-10" />
+      <div className="leading-tight">
+        <div className="flex items-baseline gap-1.5">
+          <span className="font-extrabold text-base lg:text-lg tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+            NeuraLink
+          </span>
+          <span className="font-mono text-[11px] lg:text-xs text-slate-400 border border-white/10 rounded-md px-1.5 py-0.5">
+            Studio
+          </span>
         </div>
-    );
+        {withTagline ? (
+          <p className="text-[10px] text-cyan-400/80 font-medium mt-0.5 tracking-wide">Conectando mentes, creando apps</p>
+        ) : (
+          <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> Sincronización neural activa
+          </p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 const Icon = ({ name, className = "w-5 h-5" }) => {
@@ -190,9 +215,18 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
     reader.readAsDataURL(file);
 });
 
+// --- SEGURIDAD: Función renderFormattedText con protección anti-XSS ---
 const renderFormattedText = (text) => {
     if (!text) return '';
-    let formatted = text
+    
+    // 1. Escapar HTML peligroso primero (Protección Ciberseguridad)
+    let safeText = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+    // 2. Aplicar el formato markdown seguro
+    let formatted = safeText
         .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-slate-950/90 p-3 rounded-2xl my-2 overflow-x-auto border border-cyan-500/20 text-xs font-mono text-cyan-300"><code>$2</code></pre>')
         .replace(/`([^`]+)`/g, '<code class="bg-slate-900 text-cyan-400 px-1.5 py-0.5 rounded text-xs font-mono border border-cyan-500/10">$1</code>')
         .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
@@ -241,15 +275,12 @@ export default function App() {
     <title>NeuraLink Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22NeuraLink%20Studio%22%2C%22short_name%22%3A%22NeuraLink%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23020617%22%2C%22theme_color%22%3A%22%238B5CF6%22%7D">
 </head>
 <body class="bg-[#020617] text-white min-h-[100dvh] flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.1)_0,transparent_70%)] pointer-events-none"></div>
     <div class="text-center space-y-4 relative z-10 max-w-lg p-8 rounded-3xl bg-slate-900/40 border border-white/5 backdrop-blur-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-        <div class="w-16 h-16 bg-violet-500/20 text-violet-400 rounded-2xl mx-auto flex items-center justify-center text-3xl">🧠</div>
         <h1 class="text-3xl font-extrabold text-white">NeuraLink Studio</h1>
-        <p class="text-slate-300 text-sm">Conectando mentes, creando apps. Tu PWA conectada a Supabase está lista y operativa.</p>
-        <button onclick="alert('¡Conexión a Supabase establecida exitosamente!')" class="w-full py-3 px-6 bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all">Probar Supabase</button>
+        <p class="text-slate-300 text-sm">Conectando mentes, creando apps.</p>
     </div>
 </body>
 </html>`;
@@ -413,7 +444,8 @@ export default function App() {
                         <Logo />
                     </div>
 
-                    <nav className="hidden xl:flex items-center gap-2 bg-slate-900/40 p-1.5 rounded-2xl border border-white/5 backdrop-blur-2xl">
+                    {/* --- NAVEGACIÓN RESTAURADA (Director QA) --- */}
+                    <nav className="hidden xl:flex items-center gap-1.5 bg-slate-900/40 p-1.5 rounded-2xl border border-white/5 backdrop-blur-2xl">
                         <button onClick={() => setActiveTab('home')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'home' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
                             <Icon name="Zap" className="w-4 h-4" /> Inicio
                         </button>
@@ -422,6 +454,12 @@ export default function App() {
                         </button>
                         <button onClick={() => setActiveTab('editor')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'editor' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
                             <Icon name="Code2" className="w-4 h-4" /> Forja & PWA
+                        </button>
+                        <button onClick={() => alert("Asistente Prompts en desarrollo (Oleada 2)")} className="px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-800/50">
+                            <Icon name="Sparkles" className="w-4 h-4" /> Prompts
+                        </button>
+                        <button onClick={() => alert("Kanban interactivo en desarrollo (Oleada 2)")} className="px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-800/50">
+                            <Icon name="Kanban" className="w-4 h-4" /> Kanban
                         </button>
                     </nav>
 
@@ -513,13 +551,26 @@ export default function App() {
                             </div>
 
                             <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scroll-smooth bg-transparent">
+                                
+                                {/* --- EMPTY STATE SEGURO + ONBOARDING (Seguridad + Marketing) --- */}
                                 {messages.length === 0 && (
-                                    <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto text-slate-300">
-                                        <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 mb-4 mx-auto">
+                                    <div className="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto text-slate-300 p-4">
+                                        <div className="w-16 h-16 rounded-2xl bg-[#1E293B] ring-1 ring-white/10 flex items-center justify-center text-violet-400 mb-6 mx-auto shadow-lg">
                                             <Icon name={currentSpec.icon} className="w-8 h-8" />
                                         </div>
-                                        <h3 className="text-xl font-bold text-white mb-2">Inicia conversación con {currentSpec.name}</h3>
-                                        <p className="text-sm text-slate-300 mb-6 leading-relaxed">{currentSpec.system}</p>
+                                        <h3 className="text-2xl font-bold text-white mb-2">Conectando con {currentSpec.name}</h3>
+                                        <p className="text-sm text-slate-400 mb-8 max-w-md mx-auto leading-relaxed">
+                                            El especialista está listo. Selecciona una acción sugerida para comenzar o describe tu visión en el cuadro de abajo.
+                                        </p>
+                                        
+                                        <div className="flex flex-wrap justify-center gap-3 w-full">
+                                            <button onClick={() => setInputMsg(`Por favor, genera una estructura inicial de PWA enfocada en ${currentSpec.bio.toLowerCase()}.`)} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 hover:border-violet-500/30 text-xs text-slate-300 px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                                                <Icon name="Rocket" className="w-3 h-3 text-cyan-400" /> Crear estructura inicial
+                                            </button>
+                                            <button onClick={() => setInputMsg(`¿Cuáles son las mejores prácticas y tendencias actuales para tu área de especialidad?`)} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 hover:border-violet-500/30 text-xs text-slate-300 px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                                                <Icon name="TrendingUp" className="w-3 h-3 text-violet-400" /> Tendencias y consejos
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
 
@@ -582,9 +633,15 @@ export default function App() {
                             <div className="p-3 md:p-4 bg-slate-900/40 border-t border-white/5 shrink-0 backdrop-blur-2xl">
                                 <div className="flex gap-2 max-w-5xl mx-auto items-center">
                                     <input type="file" ref={fileInputRef} accept="image/*" multiple onChange={handleImageSelect} className="hidden" />
-                                    <button onClick={() => fileInputRef.current?.click()} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 text-slate-300 p-3 md:p-3.5 rounded-2xl text-sm transition-all flex items-center justify-center">
+                                    <button onClick={() => fileInputRef.current?.click()} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 text-slate-300 p-3 md:p-3.5 rounded-2xl text-sm transition-all flex items-center justify-center" title="Adjuntar imagen">
                                         <Icon name="Camera" className="w-4 h-4 text-slate-300" />
                                     </button>
+                                    
+                                    {/* --- RESTAURADO: BOTÓN DE GENERAR VISUAL (QA) --- */}
+                                    <button onClick={() => setInputMsg(prev => prev + "[Generar concepto visual IA para: ] ")} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 text-slate-300 p-3 md:p-3.5 rounded-2xl text-sm transition-all flex items-center justify-center" title="Generar Prompt Visual">
+                                        <Icon name="Palette" className="w-4 h-4 text-violet-400" />
+                                    </button>
+
                                     <button 
                                         onClick={toggleVoiceRecognition} 
                                         className={`p-3 md:p-3.5 rounded-2xl text-sm border transition-all flex items-center justify-center ${isListening ? 'bg-red-600 text-white border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)] animate-pulse' : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300 border-white/5'}`} 
@@ -602,9 +659,9 @@ export default function App() {
                                     <button 
                                         onClick={handleSendMessage} 
                                         disabled={loading || (!inputMsg.trim() && images.length === 0)}
-                                        className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 disabled:opacity-50 text-white px-5 md:px-6 py-3.5 rounded-2xl text-sm font-bold shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all flex items-center gap-2 shrink-0"
+                                        className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 disabled:opacity-50 disabled:from-slate-700 disabled:to-slate-800 disabled:text-slate-400 text-white px-5 md:px-6 py-3.5 rounded-2xl text-sm font-bold shadow-[0_0_20px_rgba(139,92,246,0.4)] disabled:shadow-none transition-all flex items-center gap-2 shrink-0"
                                     >
-                                        <span>Enviar</span> <Icon name="Send" className="w-4 h-4" />
+                                        <span className="hidden sm:inline">Enviar</span> <Icon name="Send" className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
