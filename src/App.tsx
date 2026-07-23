@@ -3,9 +3,19 @@ import React, { useState, useEffect, useRef } from 'react';
 const SUPABASE_URL = 'https://pkpyfpibdfpbxcabpyldj.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_uGFqmmyDqzAiEoUrnKZQbQ_6mwq8OB0';
 
+// --- CLIENTE SUPABASE MEJORADO (Soporta Lectura y Escritura Real) ---
 export const supabase = {
     from: (table) => ({
-        insert: async (data) => {
+        select: async (columns = '*') => {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=${columns}`, {
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                });
+                if (!res.ok) throw new Error('Error al leer');
+                return { data: await res.json(), error: null };
+            } catch (err) { return { data: null, error: err }; }
+        },
+        upsert: async (data) => {
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
                     method: 'POST',
@@ -13,16 +23,23 @@ export const supabase = {
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${SUPABASE_KEY}`,
                         'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
+                        'Prefer': 'resolution=merge-duplicates' // Clave para actualizar si existe
                     },
                     body: JSON.stringify(data)
                 });
-                if (!res.ok) throw new Error(`Supabase error: ${res.statusText}`);
+                if (!res.ok) throw new Error('Error al guardar');
                 return { error: null };
-            } catch (err) {
-                console.warn('Supabase insert warning:', err);
-                return { error: err };
-            }
+            } catch (err) { return { error: err }; }
+        },
+        insert: async (data) => {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                    body: JSON.stringify(data)
+                });
+                return { error: res.ok ? null : new Error('Error insert') };
+            } catch (err) { return { error: err }; }
         }
     })
 };
@@ -38,38 +55,17 @@ export function LogoMark({ variant = "synapse", className = "w-10 h-10" }) {
             <stop offset="1" stopColor="#06B6D4" />
           </linearGradient>
         </defs>
-
-        {variant === "portal" && (
-          <>
-            <polygon points="24,10 36.12,17 36.12,31 24,38 11.88,31 11.88,17" stroke={`url(#${gid})`} strokeWidth="2.4" strokeLinejoin="round" />
-            <line x1="24" y1="24" x2="24" y2="10" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
-            <line x1="24" y1="24" x2="36.12" y2="31" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
-            <line x1="24" y1="24" x2="11.88" y2="31" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
-            <circle cx="24" cy="24" r="4" fill={`url(#${gid})`} />
-          </>
-        )}
-
         {variant === "synapse" && (
           <>
-            <line x1="24" y1="24" x2="24" y2="9"  stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+            <line x1="24" y1="24" x2="24" y2="9" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
             <line x1="24" y1="24" x2="11" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
             <line x1="24" y1="24" x2="37" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
             <line x1="24" y1="24" x2="38" y2="14" stroke={`url(#${gid})`} strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
-            <circle cx="24" cy="9"  r="3"   fill={`url(#${gid})`} />
-            <circle cx="11" cy="32" r="3"   fill={`url(#${gid})`} />
-            <circle cx="37" cy="32" r="3"   fill={`url(#${gid})`} />
-            <circle cx="38" cy="14" r="2"   fill={`url(#${gid})`} />
+            <circle cx="24" cy="9" r="3" fill={`url(#${gid})`} />
+            <circle cx="11" cy="32" r="3" fill={`url(#${gid})`} />
+            <circle cx="37" cy="32" r="3" fill={`url(#${gid})`} />
+            <circle cx="38" cy="14" r="2" fill={`url(#${gid})`} />
             <circle cx="24" cy="24" r="4.5" fill={`url(#${gid})`} />
-          </>
-        )}
-
-        {variant === "nexus" && (
-          <>
-            <line x1="11" y1="24" x2="37" y2="24" stroke={`url(#${gid})`} strokeWidth="2.4" strokeLinecap="round" />
-            <circle cx="11" cy="24" r="4" fill={`url(#${gid})`} />
-            <circle cx="37" cy="24" r="4" fill={`url(#${gid})`} />
-            <path d="M24 19 L29 24 L24 29 L19 24 Z" fill={`url(#${gid})`} />
-            <path d="M24 21.6 L26.4 24 L24 26.4 L21.6 24 Z" fill="#0B1220" />
           </>
         )}
       </svg>
@@ -83,12 +79,8 @@ export function Logo({ withTagline = false }) {
       <LogoMark variant="synapse" className="w-10 h-10" />
       <div className="leading-tight">
         <div className="flex items-baseline gap-1.5">
-          <span className="font-extrabold text-base lg:text-lg tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
-            NeuraLink
-          </span>
-          <span className="font-mono text-[11px] lg:text-xs text-slate-400 border border-white/10 rounded-md px-1.5 py-0.5">
-            Studio
-          </span>
+          <span className="font-extrabold text-base lg:text-lg tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">NeuraLink</span>
+          <span className="font-mono text-[11px] lg:text-xs text-slate-400 border border-white/10 rounded-md px-1.5 py-0.5">Studio</span>
         </div>
         {withTagline ? (
           <p className="text-[10px] text-cyan-400/80 font-medium mt-0.5 tracking-wide">Conectando mentes, creando apps</p>
@@ -121,6 +113,9 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
         case 'Mic': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="19" y2="23"/><line x1="8" x2="16" y1="23" y2="23"/></svg>;
         case 'Send': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>;
         case 'Volume2': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>;
+        case 'Pause': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>;
+        case 'Play': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>;
+        case 'Square': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>;
         case 'Rocket': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 3 0 3 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-3 0-3"/></svg>;
         case 'Monitor': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>;
         case 'X': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>;
@@ -135,22 +130,67 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
         case 'Trash2': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>;
         case 'ArrowRight': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>;
         case 'ArrowLeft': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>;
-        case 'Tag': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>;
-        case 'Filter': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>;
+        case 'RefreshCw': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>;
         default: return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>;
     }
 };
 
-const safeSpeak = (text) => {
-    try {
-        if (!('speechSynthesis' in window)) return false;
+// --- SISTEMA DE VOZ AVANZADO (Latino + Play/Pausa) ---
+const useNeuralVoice = () => {
+    const [speakingState, setSpeakingState] = useState({ isSpeaking: false, isPaused: false, text: '' });
+
+    useEffect(() => {
+        // Precargar voces
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+        }
+    }, []);
+
+    const speak = (text) => {
+        if (!('speechSynthesis' in window)) return;
+        
+        // Si ya está hablando el mismo texto, alternar Pausa/Reanudar
+        if (speakingState.isSpeaking && speakingState.text === text) {
+            if (speakingState.isPaused) {
+                window.speechSynthesis.resume();
+                setSpeakingState({ isSpeaking: true, isPaused: false, text });
+            } else {
+                window.speechSynthesis.pause();
+                setSpeakingState({ isSpeaking: true, isPaused: true, text });
+            }
+            return;
+        }
+
+        // Detener cualquier audio anterior
         window.speechSynthesis.cancel();
+
         const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'es-ES';
+        utter.lang = 'es-419'; // Español Latinoamericano por defecto
         utter.rate = 1.05;
+        utter.pitch = 1.0;
+
+        // Intentar buscar una voz latina específica (México, Colombia, US Spanish)
+        const voices = window.speechSynthesis.getVoices();
+        const latamVoice = voices.find(v => v.lang.includes('es-MX') || v.lang.includes('es-CO') || v.lang.includes('es-US') || v.lang.includes('es-419'));
+        if (latamVoice) {
+            utter.voice = latamVoice;
+        }
+
+        utter.onend = () => setSpeakingState({ isSpeaking: false, isPaused: false, text: '' });
+        utter.onerror = () => setSpeakingState({ isSpeaking: false, isPaused: false, text: '' });
+
         window.speechSynthesis.speak(utter);
-        return true;
-    } catch(e) { return false; }
+        setSpeakingState({ isSpeaking: true, isPaused: false, text });
+    };
+
+    const stop = () => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            setSpeakingState({ isSpeaking: false, isPaused: false, text: '' });
+        }
+    };
+
+    return { speakingState, speak, stop };
 };
 
 const SPECIALISTS = [
@@ -163,91 +203,34 @@ const SPECIALISTS = [
     { id: 'marketing', name: 'Marketing Neuronal', icon: 'TrendingUp', color: 'from-orange-600 to-red-600', bio: 'Estrategia de impacto', system: 'Eres experto en Marketing Digital y propuestas de valor disruptivas. Responde en español.' }
 ];
 
-const PRESET_PROMPTS = [
-    {
-        id: 'p1',
-        category: 'Arquitectura',
-        specialist: 'architect',
-        title: 'Estructura PWA Completa + Service Worker',
-        desc: 'Genera un documento HTML autosuficiente con soporte manifest PWA, offline caching y almacenamiento local.',
-        prompt: 'Crea una aplicación PWA completa en un solo archivo HTML con Tailwind CSS, Service Worker inscripto dinámicamente y soporte offline básico. Incluye una interfaz Bento ultra elegante.'
-    },
-    {
-        id: 'p2',
-        category: 'UI/UX',
-        specialist: 'designer',
-        title: 'Estética Bento Box + Glassmorphism Aurora',
-        desc: 'Aplica patrones visuales futuristas con gradientes en movimiento y tarjetas translúcidas.',
-        prompt: 'Diseña una interfaz moderna estilo Bento Grid con bordes translúcidos (glassmorphism), gradientes de neón cian/violeta sobre fondo slate-950 y microinteracciones en hover.'
-    },
-    {
-        id: 'p3',
-        category: 'Backend',
-        specialist: 'backend',
-        title: 'Integración Directa Supabase REST & Auth',
-        desc: 'Conexión lista con Supabase Client para registros, lecturas en vivo y tablas dinámicas.',
-        prompt: 'Proporciona la configuración e integración directa de Supabase JS client v2 sin dependencias externas complejas. Incluye un CRUD funcional con estado dinámico en pantalla.'
-    },
-    {
-        id: 'p4',
-        category: 'Seguridad',
-        specialist: 'security',
-        title: 'Auditoría de Ciberseguridad & RLS',
-        desc: 'Revisa vulnerabilidades comunes, sanitized inputs y políticas de acceso a nivel de fila (RLS).',
-        prompt: 'Analiza el código frontend actual en la Forja y sugiere mejoras de seguridad estrictas: sanitización de entradas, prevención de XSS y configuración de políticas RLS para Supabase.'
-    },
-    {
-        id: 'p5',
-        category: 'SEO',
-        specialist: 'seo',
-        title: 'Optimización PWA & Metadatos Móviles',
-        desc: 'Etiquetas Open Graph, icons y configuración Manifest PWA.',
-        prompt: 'Genera la sección <head> completa con metadatos SEO avanzados, tags Open Graph, soporte iOS standalone y un manifest PWA embebido en formato base64/dataURI.'
-    },
-    {
-        id: 'p6',
-        category: 'Marketing',
-        specialist: 'marketing',
-        title: 'Propuesta de Valor & Call to Action Disruptivo',
-        desc: 'Redacción publicitaria de alto impacto para landing pages de tecnología.',
-        prompt: 'Crea 3 variantes de propuesta de valor principal (Hero text), subtítulo motivador y botones de CTA persuasivos orientados a la conversión de usuarios en una Web App SaaS.'
-    }
-];
-
 const ANTI_HALLUCINATION_DIRECTIVE = `
 [DIRECTIVA ESTRICTA NEURALINK 2026]:
 - Stack obligatorio: React 18 + Vite + Tailwind CSS + Supabase
 - Prohibido inventar endpoints de Supabase que no existan
 - Prohibido sugerir librerías externas sin justificación
 - Si no sabes algo, di "No tengo certeza" en lugar de inventar
-- Todo código debe ser funcional y copiável directamente
+- Todo código debe ser funcional y copiable directamente
 - Mantener estética Bento + Aurora (slate-950, glassmorphism, violeta/cian)
 `;
 
 const callGeminiAPI = async (specialist, messages, images = [], currentCode = '', apiKey = '') => {
     const key = apiKey || localStorage.getItem('neuralink_gemini_key') || '';
-    if (!key) {
-        throw new Error('Por favor ingresa tu clave API de Google AI Studio haciendo clic en "Clave API" arriba.');
-    }
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${key}`;
+    if (!key) throw new Error('Por favor ingresa tu clave API de Google AI Studio.');
     
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${key}`;
     const contents = [];
+    
     messages.forEach((m, idx) => {
         const parts = [];
         if (m.images && m.images.length > 0 && idx === messages.length - 1) {
-            m.images.forEach(img => {
-                parts.push({ inline_data: { mime_type: img.mime, data: img.data } });
-            });
+            m.images.forEach(img => parts.push({ inline_data: { mime_type: img.mime, data: img.data } }));
         }
         parts.push({ text: m.text });
         contents.push({ role: m.role === 'user' ? 'user' : 'model', parts });
     });
 
     if (currentCode) {
-        contents.push({
-            role: 'user',
-            parts: [{ text: `[Contexto actual del código en NeuraLink Studio]\n\`\`\`html\n${currentCode}\n\`\`\`` }]
-        });
+        contents.push({ role: 'user', parts: [{ text: `[Contexto actual del código en NeuraLink Studio]\n\`\`\`html\n${currentCode}\n\`\`\`` }] });
     }
 
     const payload = {
@@ -257,23 +240,16 @@ const callGeminiAPI = async (specialist, messages, images = [], currentCode = ''
     };
 
     let response;
-    let delay = 1000;
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
         try {
-            response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             if (response.ok) break;
-        } catch (e) {}
-        await new Promise(res => setTimeout(res, delay));
-        delay *= 2;
+        } catch (e) { await new Promise(res => setTimeout(res, 1000 * (i + 1))); }
     }
 
     if (!response || !response.ok) {
         const errData = await response?.json().catch(() => ({}));
-        throw new Error(errData.error?.message || `Error HTTP ${response?.status || 500}. Verifica tu clave API o espera unos segundos.`);
+        throw new Error(errData.error?.message || `Error HTTP ${response?.status || 500}`);
     }
 
     const data = await response.json();
@@ -289,20 +265,14 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 
 const renderFormattedText = (text) => {
     if (!text) return '';
-    
-    let safeText = text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-
+    let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     let formatted = safeText
         .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
             return `<div class="relative group my-4"><button class="copy-code-btn absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-all z-10 flex items-center gap-1.5 shadow-lg"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg><span>Copiar</span></button><pre class="bg-slate-950/90 p-4 pt-12 rounded-2xl overflow-x-auto border border-cyan-500/20 text-xs font-mono text-cyan-300 shadow-inner"><code>${code}</code></pre></div>`;
         })
         .replace(/`([^`]+)`/g, '<code class="bg-slate-900 text-cyan-400 px-1.5 py-0.5 rounded text-xs font-mono border border-cyan-500/10">$1</code>')
         .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
-        .replace(/\n\n/g, '</p><p class="mt-2">')
-        .replace(/\n/g, '<br/>');
+        .replace(/\n\n/g, '</p><p class="mt-2">').replace(/\n/g, '<br/>');
     return `<p>${formatted}</p>`;
 };
 
@@ -312,102 +282,23 @@ export default function App() {
     const [activeTab, setActiveTab] = useState('home');
     const [activeSpecialist, setActiveSpecialist] = useState('director');
     
-    // Toast Notification System
     const [toastMessage, setToastMessage] = useState('');
-    const showToast = (msg) => {
-        setToastMessage(msg);
-        setTimeout(() => setToastMessage(''), 3000);
-    };
+    const showToast = (msg) => { setToastMessage(msg); setTimeout(() => setToastMessage(''), 3000); };
 
-    // Proyectos
-    const defaultProjects = [
-        { id: 'p_demo', name: 'Proyecto Demo', client: 'Interno', color: 'bg-violet-500', createdAt: Date.now() },
-        { id: 'p_alfa', name: 'Cliente Alfa', client: 'Alfa SA', color: 'bg-cyan-500', createdAt: Date.now() },
-        { id: 'p_beta', name: 'Cliente Beta', client: 'Beta LLC', color: 'bg-fuchsia-500', createdAt: Date.now() }
-    ];
-    
-    const [projects, setProjects] = useState(() => {
-        try {
-            const saved = localStorage.getItem('neuralink_projects');
-            return saved ? JSON.parse(saved) : defaultProjects;
-        } catch(e) { return defaultProjects; }
-    });
-    const [activeProjectId, setActiveProjectId] = useState(() => localStorage.getItem('neuralink_active_project') || 'p_demo');
+    // --- SINCRONIZACIÓN NEURAL (PC <-> App) ---
+    const [syncToken, setSyncToken] = useState(() => localStorage.getItem('neuralink_sync_token') || `NL-${Math.random().toString(36).substr(2, 6).toUpperCase()}`);
+    const [isSyncing, setIsSyncing] = useState(false);
+
+    const [projects, setProjects] = useState([{ id: 'p_demo', name: 'Proyecto Demo', client: 'Interno', color: 'bg-violet-500', createdAt: Date.now() }]);
+    const [activeProjectId, setActiveProjectId] = useState('p_demo');
     const [showProjectDropdown, setShowProjectDropdown] = useState(false);
     const [showNewProjectModal, setShowNewProjectModal] = useState(false);
     const [newProjectName, setNewProjectName] = useState('');
 
-    const [syncToken, setSyncToken] = useState(() => localStorage.getItem('neuralink_sync_token') || 'NL-67P5');
-
-    // Chats por Proyecto
-    const [chats, setChats] = useState(() => {
-        try {
-            const saved = localStorage.getItem('neuralink_neural_chats');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (parsed['director'] && Array.isArray(parsed['director'])) {
-                    return { 'p_demo': parsed };
-                }
-                return parsed;
-            }
-        } catch(e) {}
-        return { 'p_demo': {} };
-    });
+    const [chats, setChats] = useState({ 'p_demo': {} });
+    const [tasks, setTasks] = useState([]);
+    const [sandboxCode, setSandboxCode] = useState(`<!DOCTYPE html>\n<html lang="es">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>NeuraLink Studio</title>\n<script src="https://cdn.tailwindcss.com"><\/script>\n</head>\n<body class="bg-[#020617] text-white min-h-[100dvh] flex items-center justify-center p-6">\n<h1 class="text-3xl font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">NeuraLink Studio</h1>\n</body>\n</html>`);
     
-    // Tareas Kanban por Proyecto
-    const [tasks, setTasks] = useState(() => {
-        try {
-            const saved = localStorage.getItem('neuralink_neural_tasks');
-            return saved ? JSON.parse(saved) : [
-                { id: 1, projectId: 'p_demo', title: 'Definir arquitectura principal con Supabase', description: 'Crear cliente de Supabase y esquema de base de datos REST.', assignee: 'director', priority: 'Alta', status: 'done' },
-                { id: 2, projectId: 'p_demo', title: 'Generar conceptos visuales con Neón Cyan', description: 'Diseñar interfaz Bento con estética glassmorphism y microinteracciones.', assignee: 'designer', priority: 'Media', status: 'progress' },
-                { id: 3, projectId: 'p_demo', title: 'Optimizar PWA y sincronización cloud', description: 'Verificar Service Worker e inserción de logs en tiempo real.', assignee: 'seo', priority: 'Baja', status: 'todo' },
-                { id: 4, projectId: 'p_demo', title: 'Auditoría de políticas RLS y XSS', description: 'Revisar endpoints y sanitizado de inputs en frontend.', assignee: 'security', priority: 'Crítica', status: 'review' }
-            ];
-        } catch(e) { return []; }
-    });
-
-    const [showTaskModal, setShowTaskModal] = useState(false);
-    const [newTaskTitle, setNewTaskTitle] = useState('');
-    const [newTaskDesc, setNewTaskDesc] = useState('');
-    const [newTaskAssignee, setNewTaskAssignee] = useState('director');
-    const [newTaskPriority, setNewTaskPriority] = useState('Media');
-    const [newTaskStatus, setNewTaskStatus] = useState('todo');
-
-    // Prompts Studio Filter
-    const [promptSearch, setPromptSearch] = useState('');
-    const [promptCategory, setPromptCategory] = useState('Todos');
-
-    // Modal Generador Visual UI (Fase 2)
-    const [showVisualModal, setShowVisualModal] = useState(false);
-    const [visualStyle, setVisualStyle] = useState('Bento Glassmorphism');
-    const [visualColor, setVisualColor] = useState('Cyan Neón & Violeta');
-    const [visualComponents, setVisualComponents] = useState('Hero Banner, Cards de Estadísticas, Botón Neón');
-
-    // Code Sandbox
-    const [sandboxCode, setSandboxCode] = useState(() => {
-        return localStorage.getItem('neuralink_neural_code') || `<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuraLink Studio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body class="bg-[#020617] text-white min-h-[100dvh] flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.15)_0,transparent_70%)] pointer-events-none"></div>
-    <div class="text-center space-y-4 relative z-10 max-w-lg p-8 rounded-3xl bg-slate-900/40 border border-white/10 backdrop-blur-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-        <h1 class="text-3xl font-extrabold text-white bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">NeuraLink Studio</h1>
-        <p class="text-slate-300 text-sm">Conectando mentes, creando apps. Tu PWA conectada a Supabase está lista.</p>
-        <div class="pt-4">
-            <button onclick="alert('Conexión Neural Activa')" class="bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold px-6 py-2.5 rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all">Probar Supabase</button>
-        </div>
-    </div>
-</body>
-</html>`;
-    });
-
     const [previewCode, setPreviewCode] = useState(sandboxCode);
     const [inputMsg, setInputMsg] = useState('');
     const [images, setImages] = useState([]);
@@ -415,23 +306,56 @@ export default function App() {
     const [showUrlModal, setShowUrlModal] = useState(false);
     const [urlInput, setUrlInput] = useState('');
     const [urlAnalyzing, setUrlAnalyzing] = useState(false);
-
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isListening, setIsListening] = useState(false);
 
+    // Hook de voz personalizado
+    const { speakingState, speak, stop: stopSpeaking } = useNeuralVoice();
+
     const chatBottomRef = useRef(null);
     const imageInputRef = useRef(null);
     const docInputRef = useRef(null);
 
-    useEffect(() => { try { localStorage.setItem('neuralink_projects', JSON.stringify(projects)); } catch(e) {} }, [projects]);
-    useEffect(() => { try { localStorage.setItem('neuralink_active_project', activeProjectId); } catch(e) {} }, [activeProjectId]);
-    useEffect(() => { try { localStorage.setItem('neuralink_neural_chats', JSON.stringify(chats)); } catch(e) {} }, [chats]);
-    useEffect(() => { try { localStorage.setItem('neuralink_neural_tasks', JSON.stringify(tasks)); } catch(e) {} }, [tasks]);
-    useEffect(() => { try { localStorage.setItem('neuralink_neural_code', sandboxCode); } catch(e) {} }, [sandboxCode]);
-    useEffect(() => { try { localStorage.setItem('neuralink_gemini_key', apiKey); } catch(e) {} }, [apiKey]);
-    useEffect(() => { try { localStorage.setItem('neuralink_sync_token', syncToken); } catch(e) {} }, [syncToken]);
+    // --- CARGA INICIAL DESDE LA NUBE ---
+    useEffect(() => {
+        const loadFromCloud = async () => {
+            setIsSyncing(true);
+            try {
+                const { data, error } = await supabase.from('neuralink_sync').select('*').eq('token', syncToken).single();
+                if (data && !error) {
+                    if (data.projects) setProjects(JSON.parse(data.projects));
+                    if (data.chats) setChats(JSON.parse(data.chats));
+                    if (data.tasks) setTasks(JSON.parse(data.tasks));
+                    if (data.code) setSandboxCode(data.code);
+                    showToast("Sincronización desde la nube exitosa");
+                }
+            } catch (e) {
+                console.log("Primera vez o sin datos en nube, usando local.");
+            }
+            setIsSyncing(false);
+        };
+        loadFromCloud();
+    }, []); // Solo al montar
+
+    // --- GUARDADO AUTOMÁTICO EN LA NUBE (Debounce) ---
+    useEffect(() => {
+        localStorage.setItem('neuralink_sync_token', syncToken);
+        const timer = setTimeout(async () => {
+            setIsSyncing(true);
+            await supabase.from('neuralink_sync').upsert({
+                token: syncToken,
+                projects: JSON.stringify(projects),
+                chats: JSON.stringify(chats),
+                tasks: JSON.stringify(tasks),
+                code: sandboxCode,
+                updated_at: new Date().toISOString()
+            });
+            setIsSyncing(false);
+        }, 2000); // Guarda 2 segundos después del último cambio
+        return () => clearTimeout(timer);
+    }, [projects, chats, tasks, sandboxCode, syncToken]);
 
     useEffect(() => {
         const timer = setTimeout(() => { setPreviewCode(sandboxCode); }, 500);
@@ -442,20 +366,15 @@ export default function App() {
         if (activeTab === 'chat') { chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }
     }, [chats, activeSpecialist, loading, activeTab, activeProjectId]);
 
+    // Manejo de copiado de código
     useEffect(() => {
         const handleCopy = (e) => {
             const btn = e.target.closest('.copy-code-btn');
             if (btn) {
                 const codeNode = btn.parentElement.querySelector('code');
                 if (codeNode) {
-                    const rawCode = codeNode.innerText
-                        .replace(/&amp;/g, "&")
-                        .replace(/&lt;/g, "<")
-                        .replace(/&gt;/g, ">");
-                    
-                    navigator.clipboard.writeText(rawCode).then(() => {
-                        showToast("Código copiado al portapapeles");
-                    });
+                    const rawCode = codeNode.innerText.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+                    navigator.clipboard.writeText(rawCode).then(() => showToast("Código copiado al portapapeles"));
                 }
             }
         };
@@ -466,36 +385,26 @@ export default function App() {
     const createNewProject = () => {
         if (!newProjectName.trim()) return;
         const newId = `p_${Date.now()}`;
-        const newProj = {
-            id: newId,
-            name: newProjectName,
-            client: 'Nuevo Cliente',
-            color: 'bg-violet-500',
-            createdAt: Date.now()
-        };
+        const newProj = { id: newId, name: newProjectName, client: 'Nuevo Cliente', color: 'bg-violet-500', createdAt: Date.now() };
         setProjects([...projects, newProj]);
         setActiveProjectId(newId);
+        setChats(prev => ({ ...prev, [newId]: {} }));
         setNewProjectName('');
         setShowNewProjectModal(false);
-        showToast(`Proyecto "${newProj.name}" creado`);
+        showToast(`Proyecto "${newProj.name}" creado y sincronizado`);
     };
 
     const toggleVoiceRecognition = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            showToast("Tu navegador no soporta reconocimiento de voz");
-            return;
-        }
+        if (!SpeechRecognition) { showToast("Navegador no soporta reconocimiento de voz"); return; }
         if (isListening) { setIsListening(false); return; }
         try {
             const recognition = new SpeechRecognition();
-            recognition.lang = 'es-ES';
+            recognition.lang = 'es-419'; // También forzar latino en el input de voz
             recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
             recognition.onstart = () => setIsListening(true);
             recognition.onresult = (event) => {
-                const speechText = event.results[0][0].transcript;
-                setInputMsg(prev => prev ? `${prev} ${speechText}` : speechText);
+                setInputMsg(prev => prev ? `${prev} ${event.results[0][0].transcript}` : event.results[0][0].transcript);
                 setIsListening(false);
             };
             recognition.onerror = () => setIsListening(false);
@@ -542,19 +451,14 @@ export default function App() {
         if (!apiKey.trim()) { setShowKeyModal(true); return; }
 
         const spec = SPECIALISTS.find(s => s.id === activeSpecialist);
-        
         let finalPromptText = inputMsg || '(Mensaje con adjuntos)';
         if (attachments.length > 0) {
             finalPromptText += '\n\n[Archivos adjuntos del usuario]:\n';
-            attachments.forEach(att => {
-                finalPromptText += `\n--- ${att.name} ---\n${att.content}\n`;
-            });
+            attachments.forEach(att => { finalPromptText += `\n--- ${att.name} ---\n${att.content}\n`; });
         }
 
         const userMessage = { 
-            role: 'user', 
-            text: finalPromptText, 
-            displayMsg: inputMsg || '(Archivos enviados)',
+            role: 'user', text: finalPromptText, displayMsg: inputMsg || '(Archivos enviados)',
             images: images.map(i => ({ name: i.name, preview: i.preview })),
             hasAttachments: attachments.length > 0,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
@@ -564,11 +468,7 @@ export default function App() {
         const currentSpecChat = projectChats[activeSpecialist] || [];
         const updatedChat = [...currentSpecChat, userMessage];
         
-        setChats(prev => ({ 
-            ...prev, 
-            [activeProjectId]: { ...prev[activeProjectId], [activeSpecialist]: updatedChat } 
-        }));
-
+        setChats(prev => ({ ...prev, [activeProjectId]: { ...prev[activeProjectId], [activeSpecialist]: updatedChat } }));
         setInputMsg('');
         const currentImages = [...images];
         setImages([]);
@@ -582,18 +482,10 @@ export default function App() {
             
             setChats(prev => {
                 const currentProj = prev[activeProjectId] || {};
-                return {
-                    ...prev,
-                    [activeProjectId]: { ...currentProj, [activeSpecialist]: [...updatedChat, botMessage] }
-                };
+                return { ...prev, [activeProjectId]: { ...currentProj, [activeSpecialist]: [...updatedChat, botMessage] } };
             });
 
-            try {
-                await supabase.from('neuralink_logs').insert([
-                    { token: syncToken, specialist: activeSpecialist, prompt: finalPromptText.substring(0,500), response: replyText.substring(0,500) }
-                ]);
-            } catch(dbErr) {}
-
+            await supabase.from('neuralink_logs').insert([{ token: syncToken, specialist: activeSpecialist, prompt: finalPromptText.substring(0,500), response: replyText.substring(0,500) }]);
         } catch (err) {
             setErrorMsg(`Error: ${err.message}`);
         } finally {
@@ -612,128 +504,51 @@ export default function App() {
         }
     };
 
-    // Funciones del Kanban Board
-    const handleAddTask = () => {
-        if (!newTaskTitle.trim()) return;
-        const taskObj = {
-            id: Date.now(),
-            projectId: activeProjectId,
-            title: newTaskTitle,
-            description: newTaskDesc,
-            assignee: newTaskAssignee,
-            priority: newTaskPriority,
-            status: newTaskStatus
-        };
-        setTasks(prev => [...prev, taskObj]);
-        setNewTaskTitle('');
-        setNewTaskDesc('');
-        setShowTaskModal(false);
-        showToast("Tarea añadida al Tablero Kanban");
-    };
-
-    const updateTaskStatus = (taskId, newStatus) => {
-        setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
-        showToast("Estado de tarea actualizado");
-    };
-
-    const deleteTask = (taskId) => {
-        setTasks(prev => prev.filter(t => t.id !== taskId));
-        showToast("Tarea eliminada");
-    };
-
-    // Funciones del Generador Visual
-    const applyVisualPrompt = () => {
-        const visualPromptText = `[Generador Visual UI/UX - NeuraLink Studio]\nGenera el código frontend completo en un solo archivo HTML/Tailwind CSS con las siguientes especificaciones:\n- Estilo UI: ${visualStyle}\n- Paleta de Colores: ${visualColor}\n- Componentes Requeridos: ${visualComponents}\n- Requisito: Estructura Bento responsiva, glassmorphism con border translúcido, sin Cumulative Layout Shifts (CLS) y listo para PWA.`;
-        
-        setInputMsg(visualPromptText);
-        setShowVisualModal(false);
-        setActiveTab('chat');
-        showToast("Prompt visual inyectado en el chat");
-    };
-
-    const usePresetPrompt = (preset) => {
-        setActiveSpecialist(preset.specialist);
-        setInputMsg(preset.prompt);
-        setActiveTab('chat');
-        showToast(`Prompt preparado para ${SPECIALISTS.find(s=>s.id===preset.specialist)?.name}`);
-    };
-
     const currentProject = projects.find(p => p.id === activeProjectId) || projects[0];
     const currentSpec = SPECIALISTS.find(s => s.id === activeSpecialist) || SPECIALISTS[0];
     const projectChats = chats[activeProjectId] || {};
     const messages = projectChats[activeSpecialist] || [];
-    const projectTasks = tasks.filter(t => t.projectId === activeProjectId || !t.projectId);
 
     return (
         <div className="h-[100dvh] w-screen flex flex-col bg-[#020617] text-slate-100 overflow-hidden font-sans selection:bg-cyan-500 selection:text-slate-950 relative" translate="no">
-            
-            {/* Background Effects */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                <div 
-                    className="absolute inset-0 opacity-[0.03]"
-                    style={{
-                        backgroundImage: `
-                            linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(6, 182, 212, 0.3) 1px, transparent 1px)
-                        `,
-                        backgroundSize: '60px 60px'
-                    }}
-                />
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.3) 1px, transparent 1px)`, backgroundSize: '60px 60px' }} />
                 <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[120px] animate-[pulse_8s_ease-in-out_infinite]"></div>
                 <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] animate-[pulse_8s_ease-in-out_infinite]" style={{ animationDelay: '4s' }}></div>
             </div>
 
-            {/* Toast System */}
             {toastMessage && (
                 <div className="fixed top-20 right-6 z-50 bg-slate-900 border border-cyan-500/40 text-cyan-300 text-xs px-4 py-3 rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.3)] backdrop-blur-xl flex items-center gap-2 animate-fade-in">
                     <Icon name="Check" className="w-4 h-4 text-cyan-400" />
                     <span>{toastMessage}</span>
+                    {isSyncing && <Icon name="RefreshCw" className="w-3 h-3 animate-spin text-slate-400" />}
                 </div>
             )}
 
-            {/* Header */}
             <header className="sticky top-0 z-40 bg-[#020617]/85 backdrop-blur-2xl saturate-150 border-b border-white/5 shrink-0">
                 <div className="mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-6">
-                        <div className="cursor-pointer" onClick={() => setActiveTab('home')}>
-                            <Logo />
-                        </div>
-
-                        {/* Selector de Proyectos */}
+                        <div className="cursor-pointer" onClick={() => setActiveTab('home')}><Logo /></div>
                         <div className="hidden md:block relative">
-                            <button 
-                                onClick={() => setShowProjectDropdown(!showProjectDropdown)} 
-                                className="flex items-center gap-2 bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 rounded-xl px-3 py-1.5 transition-all text-sm font-medium backdrop-blur-xl text-slate-200"
-                            >
+                            <button onClick={() => setShowProjectDropdown(!showProjectDropdown)} className="flex items-center gap-2 bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 rounded-xl px-3 py-1.5 transition-all text-sm font-medium backdrop-blur-xl text-slate-200">
                                 <div className={`w-2 h-2 rounded-full ${currentProject.color}`}></div>
                                 {currentProject.name}
                                 <Icon name="ChevronDown" className="w-4 h-4 text-slate-400" />
                             </button>
-
                             {showProjectDropdown && (
                                 <>
                                     <div className="fixed inset-0 z-40" onClick={() => setShowProjectDropdown(false)}></div>
                                     <div className="absolute top-full left-0 mt-2 w-56 bg-slate-900 border border-white/10 rounded-2xl shadow-xl z-50 overflow-hidden backdrop-blur-xl">
-                                        <div className="p-2 border-b border-white/5">
-                                            <span className="text-[10px] uppercase font-bold text-slate-500 px-2 tracking-wider">Tus Proyectos</span>
-                                        </div>
+                                        <div className="p-2 border-b border-white/5"><span className="text-[10px] uppercase font-bold text-slate-500 px-2 tracking-wider">Tus Proyectos</span></div>
                                         <div className="p-1 max-h-64 overflow-y-auto">
                                             {projects.map(p => (
-                                                <button 
-                                                    key={p.id}
-                                                    onClick={() => { setActiveProjectId(p.id); setShowProjectDropdown(false); showToast(`Proyecto activo: ${p.name}`); }}
-                                                    className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-xl transition-all ${activeProjectId === p.id ? 'bg-violet-500/10 text-white font-bold' : 'text-slate-300 hover:bg-white/5 hover:text-white'}`}
-                                                >
-                                                    <div className={`w-2 h-2 rounded-full ${p.color}`}></div>
-                                                    {p.name}
+                                                <button key={p.id} onClick={() => { setActiveProjectId(p.id); setShowProjectDropdown(false); showToast(`Proyecto activo: ${p.name}`); }} className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-xl transition-all ${activeProjectId === p.id ? 'bg-violet-500/10 text-white font-bold' : 'text-slate-300 hover:bg-white/5 hover:text-white'}`}>
+                                                    <div className={`w-2 h-2 rounded-full ${p.color}`}></div>{p.name}
                                                 </button>
                                             ))}
                                         </div>
                                         <div className="p-2 border-t border-white/5">
-                                            <button 
-                                                onClick={() => { setShowProjectDropdown(false); setShowNewProjectModal(true); }}
-                                                className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-bold py-2 rounded-xl transition-all"
-                                            >
+                                            <button onClick={() => { setShowProjectDropdown(false); setShowNewProjectModal(true); }} className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-bold py-2 rounded-xl transition-all">
                                                 <Icon name="Plus" className="w-3 h-3" /> Nuevo Proyecto
                                             </button>
                                         </div>
@@ -744,21 +559,12 @@ export default function App() {
                     </div>
 
                     <nav className="hidden xl:flex items-center gap-1.5 bg-slate-900/40 p-1.5 rounded-2xl border border-white/5 backdrop-blur-2xl">
-                        <button onClick={() => setActiveTab('home')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'home' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
-                            <Icon name="Zap" className="w-4 h-4" /> Inicio
-                        </button>
-                        <button onClick={() => setActiveTab('chat')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'chat' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
-                            <Icon name="MessageSquare" className="w-4 h-4" /> Chat Neural
-                        </button>
-                        <button onClick={() => setActiveTab('editor')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'editor' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
-                            <Icon name="Code2" className="w-4 h-4" /> Forja & PWA
-                        </button>
-                        <button onClick={() => setActiveTab('prompts')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'prompts' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
-                            <Icon name="Sparkles" className="w-4 h-4" /> Prompts
-                        </button>
-                        <button onClick={() => setActiveTab('kanban')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'kanban' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
-                            <Icon name="Kanban" className="w-4 h-4" /> Kanban
-                        </button>
+                        {['home', 'chat', 'editor'].map(tab => (
+                            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === tab ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
+                                <Icon name={tab === 'home' ? 'Zap' : tab === 'chat' ? 'MessageSquare' : 'Code2'} className="w-4 h-4" /> 
+                                {tab === 'home' ? 'Inicio' : tab === 'chat' ? 'Chat Neural' : 'Forja & PWA'}
+                            </button>
+                        ))}
                     </nav>
 
                     <div className="flex items-center gap-3">
@@ -767,9 +573,8 @@ export default function App() {
                                 <div className="w-2 h-2 rounded-full bg-violet-400" />
                                 <div className="absolute inset-0 w-2 h-2 rounded-full bg-violet-400 animate-ping" />
                             </div>
-                            <span className="text-xs text-violet-300 font-medium">Supabase Cloud</span>
+                            <span className="text-xs text-violet-300 font-medium">Sync: {syncToken}</span>
                         </div>
-
                         <button onClick={() => setShowKeyModal(true)} className="bg-slate-900/40 hover:bg-slate-800/60 border border-white/5 text-xs px-3.5 py-2.5 rounded-xl font-bold text-slate-100 hover:text-white transition-all flex items-center gap-2 backdrop-blur-xl shadow-lg">
                             <Icon name="Key" className="w-4 h-4 text-cyan-400" /> Clave API
                         </button>
@@ -777,21 +582,16 @@ export default function App() {
                 </div>
             </header>
 
-            {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden relative w-full pb-16 xl:pb-0 z-10">
-                
-                {/* 1. INICIO */}
                 {activeTab === 'home' && (
                     <div className="flex-1 overflow-y-auto scroll-smooth bg-transparent w-full animate-fade-in p-6">
                         <section className="max-w-5xl mx-auto pt-12 pb-8 text-center space-y-6">
-                            <div className="flex justify-center mb-4">
-                                <Logo withTagline />
-                            </div>
+                            <div className="flex justify-center mb-4"><Logo withTagline /></div>
                             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mt-4">
                                 Crea apps conectando <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">mentes y código</span>
                             </h1>
                             <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                                Tu estudio neural con Supabase integrado. Diseña, chatea con especialistas autónomos, gestiona proyectos en Kanban y genera aplicaciones PWA en segundos.
+                                Tu estudio neural con sincronización en la nube. Diseña, chatea con especialistas autónomos y genera aplicaciones PWA en segundos.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 pt-4">
                                 <button onClick={() => setActiveTab('chat')} className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:opacity-90 text-white font-bold px-8 py-4 rounded-2xl shadow-[0_0_30px_rgba(217,70,239,0.5)] transition-all flex items-center gap-2">
@@ -800,15 +600,11 @@ export default function App() {
                                 <button onClick={() => setActiveTab('editor')} className="bg-slate-900/60 hover:bg-slate-800/80 text-slate-200 border border-white/10 px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-2 backdrop-blur-2xl shadow-xl">
                                     <Icon name="Code2" className="w-5 h-5 text-violet-400" /> Abrir Forja PWA
                                 </button>
-                                <button onClick={() => setActiveTab('kanban')} className="bg-slate-900/60 hover:bg-slate-800/80 text-slate-200 border border-white/10 px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-2 backdrop-blur-2xl shadow-xl">
-                                    <Icon name="Kanban" className="w-5 h-5 text-cyan-400" /> Tablero Kanban
-                                </button>
                             </div>
                         </section>
                     </div>
                 )}
 
-                {/* 2. CHAT NEURAL */}
                 {activeTab === 'chat' && (
                     <div className="flex-1 flex overflow-hidden w-full animate-fade-in">
                         <aside className={`${sidebarOpen ? 'block absolute z-30 h-full' : 'hidden'} xl:block w-72 bg-[#020617]/90 backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0 overflow-y-auto`}>
@@ -820,11 +616,7 @@ export default function App() {
                                 {SPECIALISTS.map(spec => {
                                     const hasChat = projectChats[spec.id] && projectChats[spec.id].length > 0;
                                     return (
-                                        <button 
-                                            key={spec.id} 
-                                            onClick={() => { setActiveSpecialist(spec.id); setSidebarOpen(false); }}
-                                            className={`w-full text-left p-3 rounded-2xl transition-all flex items-center gap-3 relative bg-slate-900/40 backdrop-blur-2xl border ${activeSpecialist === spec.id ? 'border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.2)]' : 'border-white/5 hover:border-white/10'}`}
-                                        >
+                                        <button key={spec.id} onClick={() => { setActiveSpecialist(spec.id); setSidebarOpen(false); }} className={`w-full text-left p-3 rounded-2xl transition-all flex items-center gap-3 relative bg-slate-900/40 backdrop-blur-2xl border ${activeSpecialist === spec.id ? 'border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.2)]' : 'border-white/5 hover:border-white/10'}`}>
                                             <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0">
                                                 <Icon name={spec.icon} className="w-5 h-5" />
                                             </div>
@@ -832,9 +624,7 @@ export default function App() {
                                                 <p className={`text-sm font-bold truncate ${activeSpecialist === spec.id ? 'text-white' : 'text-slate-300'}`}>{spec.name}</p>
                                                 <p className="text-[10px] text-slate-400 truncate">{spec.bio}</p>
                                             </div>
-                                            {hasChat && (
-                                                <span className="w-2 h-2 rounded-full bg-violet-400 absolute top-3 right-3 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></span>
-                                            )}
+                                            {hasChat && <span className="w-2 h-2 rounded-full bg-violet-400 absolute top-3 right-3 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></span>}
                                         </button>
                                     );
                                 })}
@@ -865,40 +655,43 @@ export default function App() {
                                 {messages.map((m, idx) => (
                                     <div key={idx} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
                                         <div className={`max-w-[90%] md:max-w-[75%] rounded-3xl p-4 md:p-5 shadow-lg relative ${
-                                            m.role === 'user' 
-                                            ? 'bg-gradient-to-br from-violet-600/90 to-fuchsia-600/90 text-white border border-white/10 rounded-tr-sm' 
-                                            : 'bg-slate-900/80 text-slate-200 border border-white/5 backdrop-blur-xl rounded-tl-sm shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]'
+                                            m.role === 'user' ? 'bg-gradient-to-br from-violet-600/90 to-fuchsia-600/90 text-white border border-white/10 rounded-tr-sm' : 'bg-slate-900/80 text-slate-200 border border-white/5 backdrop-blur-xl rounded-tl-sm shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]'
                                         }`}>
-                                            
                                             {m.role === 'model' && (
                                                 <div className="absolute top-4 right-4 flex gap-2">
-                                                    <button onClick={() => safeSpeak(m.text)} className="text-slate-400 hover:text-white p-1 bg-white/5 rounded-md transition-colors" title="Leer en voz alta">
-                                                        <Icon name="Volume2" className="w-3.5 h-3.5" />
-                                                    </button>
+                                                    {/* BOTÓN DE VOZ DINÁMICO (PLAY / PAUSA / STOP) */}
+                                                    {speakingState.isSpeaking && speakingState.text === m.text ? (
+                                                        <>
+                                                            <button onClick={() => speak(m.text)} className="text-cyan-400 hover:text-white p-1 bg-cyan-500/10 hover:bg-cyan-500/20 rounded-md transition-colors border border-cyan-500/20" title={speakingState.isPaused ? "Reanudar" : "Pausar"}>
+                                                                <Icon name={speakingState.isPaused ? "Play" : "Pause"} className="w-3.5 h-3.5" />
+                                                            </button>
+                                                            <button onClick={stopSpeaking} className="text-red-400 hover:text-white p-1 bg-red-500/10 hover:bg-red-500/20 rounded-md transition-colors border border-red-500/20" title="Detener">
+                                                                <Icon name="Square" className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <button onClick={() => speak(m.text)} className="text-slate-400 hover:text-cyan-400 p-1 bg-white/5 hover:bg-white/10 rounded-md transition-colors" title="Leer en voz alta (Latino)">
+                                                            <Icon name="Volume2" className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    )}
                                                     <button onClick={() => extractAndApplyCode(m.text)} className="text-cyan-400 hover:text-white p-1 bg-cyan-500/10 hover:bg-cyan-500/20 rounded-md transition-colors border border-cyan-500/20" title="Aplicar código a la Forja">
                                                         <Icon name="Rocket" className="w-3.5 h-3.5" />
                                                     </button>
                                                 </div>
                                             )}
 
-                                            <div className="text-sm leading-relaxed prose prose-invert prose-p:my-1 prose-pre:my-0 max-w-none" 
-                                                 dangerouslySetInnerHTML={{ __html: m.role === 'model' ? renderFormattedText(m.text) : (m.displayMsg || m.text) }} 
-                                            />
+                                            <div className="text-sm leading-relaxed prose prose-invert prose-p:my-1 prose-pre:my-0 max-w-none" dangerouslySetInnerHTML={{ __html: m.role === 'model' ? renderFormattedText(m.text) : (m.displayMsg || m.text) }} />
                                             
                                             {m.hasAttachments && (
                                                 <div className="mt-3 flex flex-wrap gap-2">
                                                     <span className="text-[10px] bg-white/20 px-2 py-1 rounded border border-white/30 flex items-center gap-1"><Icon name="FileText" className="w-3 h-3"/> Documentos adjuntos</span>
                                                 </div>
                                             )}
-
                                             {m.images && m.images.length > 0 && (
                                                 <div className="mt-4 flex flex-wrap gap-3">
-                                                    {m.images.map((img, i) => (
-                                                        <img key={i} src={img.preview} alt="Upload" className="w-24 h-24 object-cover rounded-xl border border-white/20 shadow-md" />
-                                                    ))}
+                                                    {m.images.map((img, i) => (<img key={i} src={img.preview} alt="Upload" className="w-24 h-24 object-cover rounded-xl border border-white/20 shadow-md" />))}
                                                 </div>
                                             )}
-                                            
                                             <span className={`text-[10px] mt-3 block font-medium ${m.role === 'user' ? 'text-violet-200' : 'text-slate-500'}`}>{m.time}</span>
                                         </div>
                                     </div>
@@ -911,15 +704,11 @@ export default function App() {
                                                 <span className="w-2.5 h-2.5 bg-fuchsia-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></span>
                                                 <span className="w-2.5 h-2.5 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
                                             </div>
-                                            <span className="text-xs text-slate-400 font-medium">Procesando sinapsis...</span>
+                                            <span className="text-xs text-slate-400 font-medium">Procesando sinapsis y sincronizando...</span>
                                         </div>
                                     </div>
                                 )}
-                                {errorMsg && (
-                                    <div className="bg-red-950/50 border border-red-500/50 text-red-200 text-xs p-4 rounded-2xl mx-4 mb-4 backdrop-blur-md">
-                                        {errorMsg}
-                                    </div>
-                                )}
+                                {errorMsg && <div className="bg-red-950/50 border border-red-500/50 text-red-200 text-xs p-4 rounded-2xl mx-4 mb-4 backdrop-blur-md">{errorMsg}</div>}
                                 <div ref={chatBottomRef} />
                             </div>
 
@@ -943,17 +732,13 @@ export default function App() {
                                 )}
 
                                 <div className="flex gap-2 max-w-4xl mx-auto">
-                                    <button onClick={() => setShowVisualModal(true)} className="bg-slate-900 border border-white/10 p-3.5 rounded-2xl text-slate-400 hover:text-fuchsia-400 hover:border-fuchsia-500/50 transition-all" title="Generador Visual UI/UX">
-                                        <Icon name="Palette" className="w-5 h-5" />
-                                    </button>
-                                    
                                     <div className="flex-1 bg-slate-900/80 border border-white/10 focus-within:border-violet-500/50 rounded-2xl flex items-center px-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] transition-all">
                                         <button onClick={() => imageInputRef.current?.click()} className="p-2 text-slate-400 hover:text-cyan-400 transition-colors" title="Subir Imagen">
                                             <Icon name="Camera" className="w-5 h-5" />
                                         </button>
                                         <input type="file" multiple accept="image/*" className="hidden" ref={imageInputRef} onChange={handleImageSelect} />
                                         
-                                        <button onClick={() => docInputRef.current?.click()} className="p-2 text-slate-400 hover:text-violet-400 transition-colors" title="Adjuntar Documentos">
+                                        <button onClick={() => docInputRef.current?.click()} className="p-2 text-slate-400 hover:text-violet-400 transition-colors" title="Adjuntar Documentos (.txt, .js, .json, etc)">
                                             <Icon name="Paperclip" className="w-5 h-5" />
                                         </button>
                                         <input type="file" multiple accept=".txt,.js,.jsx,.ts,.tsx,.json,.md,.html,.css" className="hidden" ref={docInputRef} onChange={handleDocumentSelect} />
@@ -963,24 +748,17 @@ export default function App() {
                                         </button>
 
                                         <input 
-                                            type="text" 
-                                            value={inputMsg} 
-                                            onChange={e => setInputMsg(e.target.value)}
+                                            type="text" value={inputMsg} onChange={e => setInputMsg(e.target.value)}
                                             onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
                                             placeholder={`Comunica con ${currentSpec.name}...`}
-                                            className="flex-1 bg-transparent border-none text-white text-sm px-2 focus:outline-none focus:ring-0 placeholder:text-slate-500"
-                                            disabled={loading}
+                                            className="flex-1 bg-transparent border-none text-white text-sm px-2 focus:outline-none focus:ring-0 placeholder:text-slate-500" disabled={loading}
                                         />
                                         <button onClick={toggleVoiceRecognition} className={`p-2 transition-colors ${isListening ? 'text-red-400 animate-pulse' : 'text-slate-400 hover:text-violet-400'}`} title="Dictado Neural">
                                             <Icon name="Mic" className="w-5 h-5" />
                                         </button>
                                     </div>
                                     
-                                    <button 
-                                        onClick={handleSendMessage} 
-                                        disabled={loading || (!inputMsg.trim() && images.length === 0 && attachments.length === 0)}
-                                        className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-2xl shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all flex items-center justify-center"
-                                    >
+                                    <button onClick={handleSendMessage} disabled={loading || (!inputMsg.trim() && images.length === 0 && attachments.length === 0)} className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-2xl shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all flex items-center justify-center">
                                         <Icon name="Send" className="w-5 h-5" />
                                     </button>
                                 </div>
@@ -989,450 +767,77 @@ export default function App() {
                     </div>
                 )}
 
-                {/* 3. FORJA & EDITOR PWA */}
                 {activeTab === 'editor' && (
                     <div className="flex-1 flex flex-col lg:flex-row overflow-hidden w-full animate-fade-in bg-[#020617]">
                         <div className="w-full lg:w-1/2 flex flex-col border-r border-white/5">
                             <div className="bg-slate-900/60 p-3 border-b border-white/5 flex items-center gap-2 text-xs font-bold text-slate-300">
                                 <Icon name="Code2" className="w-4 h-4 text-violet-400" /> Editor PWA
                             </div>
-                            <textarea
-                                value={sandboxCode}
-                                onChange={(e) => setSandboxCode(e.target.value)}
-                                className="flex-1 w-full bg-transparent text-cyan-300 font-mono text-[13px] p-6 focus:outline-none resize-none leading-relaxed"
-                                spellCheck="false"
-                            />
+                            <textarea value={sandboxCode} onChange={(e) => setSandboxCode(e.target.value)} className="flex-1 w-full bg-transparent text-cyan-300 font-mono text-[13px] p-6 focus:outline-none resize-none leading-relaxed" spellCheck="false" />
                         </div>
                         <div className="w-full lg:w-1/2 flex flex-col bg-slate-950">
                             <div className="bg-slate-900/60 p-3 border-b border-white/5 flex items-center gap-2 text-xs font-bold text-slate-300">
                                 <Icon name="Monitor" className="w-4 h-4 text-cyan-400" /> Preview en Vivo
                             </div>
                             <div className="flex-1 bg-white p-0 relative">
-                                <iframe
-                                    srcDoc={previewCode}
-                                    title="PWA Preview"
-                                    className="w-full h-full border-none absolute inset-0"
-                                    sandbox="allow-scripts allow-modals allow-forms allow-popups"
-                                />
+                                <iframe srcDoc={previewCode} title="PWA Preview" className="w-full h-full border-none absolute inset-0" sandbox="allow-scripts allow-modals allow-forms allow-popups" />
                             </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* 4. BIBLIOTECA DE PROMPTS */}
-                {activeTab === 'prompts' && (
-                    <div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full animate-fade-in space-y-6">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
-                            <div>
-                                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                                    <Icon name="Sparkles" className="w-6 h-6 text-fuchsia-400" /> Asistente & Biblioteca de Prompts
-                                </h2>
-                                <p className="text-sm text-slate-400">Instrucciones optimizadas para acelerar la generación de código y arquitectura.</p>
-                            </div>
-                            
-                            {/* Buscador */}
-                            <div className="flex items-center gap-2 bg-slate-900 border border-white/10 rounded-xl px-3 py-2 w-full md:w-72">
-                                <Icon name="Search" className="w-4 h-4 text-slate-400" />
-                                <input 
-                                    type="text" 
-                                    placeholder="Buscar prompts..." 
-                                    value={promptSearch} 
-                                    onChange={e => setPromptSearch(e.target.value)}
-                                    className="bg-transparent text-xs text-white focus:outline-none w-full"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Categorías */}
-                        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-                            {['Todos', 'Arquitectura', 'UI/UX', 'Backend', 'Seguridad', 'SEO', 'Marketing'].map(cat => (
-                                <button
-                                    key={cat}
-                                    onClick={() => setPromptCategory(cat)}
-                                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 border ${promptCategory === cat ? 'bg-violet-600 text-white border-violet-500 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-slate-900 text-slate-400 border-white/5 hover:text-white'}`}
-                                >
-                                    {cat}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Grid de Prompts */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {PRESET_PROMPTS
-                                .filter(p => promptCategory === 'Todos' || p.category === promptCategory)
-                                .filter(p => p.title.toLowerCase().includes(promptSearch.toLowerCase()) || p.desc.toLowerCase().includes(promptSearch.toLowerCase()))
-                                .map(preset => {
-                                    const spec = SPECIALISTS.find(s => s.id === preset.specialist);
-                                    return (
-                                        <div key={preset.id} className="bg-slate-900/60 border border-white/10 rounded-2xl p-5 backdrop-blur-xl flex flex-col justify-between hover:border-violet-500/40 transition-all group">
-                                            <div className="space-y-3">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-bold uppercase tracking-wider bg-violet-500/10 text-violet-400 border border-violet-500/20 px-2 py-0.5 rounded-md">
-                                                        {preset.category}
-                                                    </span>
-                                                    <span className="text-xs text-slate-500 flex items-center gap-1">
-                                                        <Icon name={spec?.icon || 'Brain'} className="w-3.5 h-3.5 text-cyan-400" /> {spec?.name}
-                                                    </span>
-                                                </div>
-                                                <h3 className="font-bold text-white text-sm group-hover:text-cyan-300 transition-colors">{preset.title}</h3>
-                                                <p className="text-xs text-slate-400 leading-relaxed">{preset.desc}</p>
-                                            </div>
-
-                                            <div className="pt-4 mt-4 border-t border-white/5 flex items-center justify-between gap-2">
-                                                <button 
-                                                    onClick={() => { navigator.clipboard.writeText(preset.prompt); showToast("Prompt copiado al portapapeles"); }}
-                                                    className="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5"
-                                                >
-                                                    <Icon name="Clipboard" className="w-3.5 h-3.5" /> Copiar
-                                                </button>
-                                                <button 
-                                                    onClick={() => usePresetPrompt(preset)}
-                                                    className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white text-xs px-3.5 py-1.5 rounded-xl font-bold transition-all shadow-md flex items-center gap-1.5"
-                                                >
-                                                    <Icon name="Rocket" className="w-3.5 h-3.5" /> Usar en Chat
-                                                </button>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                        </div>
-                    </div>
-                )}
-
-                {/* 5. TABLERO KANBAN INTERACTIVO */}
-                {activeTab === 'kanban' && (
-                    <div className="flex-1 overflow-y-auto p-6 max-w-7xl mx-auto w-full animate-fade-in space-y-6">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
-                            <div>
-                                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                                    <Icon name="Kanban" className="w-6 h-6 text-cyan-400" /> Tablero Kanban Neural
-                                </h2>
-                                <p className="text-sm text-slate-400">Planificación y estado de ejecución para el proyecto <span className="text-violet-400 font-bold">{currentProject.name}</span>.</p>
-                            </div>
-                            <button 
-                                onClick={() => setShowTaskModal(true)}
-                                className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition-all shadow-lg flex items-center gap-2 shrink-0"
-                            >
-                                <Icon name="Plus" className="w-4 h-4" /> Nueva Tarea
-                            </button>
-                        </div>
-
-                        {/* Columnas Kanban */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {[
-                                { id: 'todo', title: 'Por Hacer', color: 'border-slate-500', badge: 'bg-slate-500/20 text-slate-300' },
-                                { id: 'progress', title: 'En Proceso', color: 'border-cyan-500', badge: 'bg-cyan-500/20 text-cyan-300' },
-                                { id: 'review', title: 'En Revisión', color: 'border-violet-500', badge: 'bg-violet-500/20 text-violet-300' },
-                                { id: 'done', title: 'Completado', color: 'border-emerald-500', badge: 'bg-emerald-500/20 text-emerald-300' }
-                            ].map(col => {
-                                const colTasks = projectTasks.filter(t => t.status === col.id);
-                                return (
-                                    <div key={col.id} className="bg-slate-900/40 border border-white/5 rounded-2xl p-4 backdrop-blur-xl flex flex-col min-h-[450px]">
-                                        <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
-                                            <span className="font-bold text-sm text-white flex items-center gap-2">
-                                                <div className={`w-2 h-2 rounded-full border-2 ${col.color}`} />
-                                                {col.title}
-                                            </span>
-                                            <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${col.badge}`}>{colTasks.length}</span>
-                                        </div>
-
-                                        <div className="flex-1 space-y-3">
-                                            {colTasks.length === 0 && (
-                                                <div className="h-32 border border-dashed border-white/5 rounded-xl flex items-center justify-center text-xs text-slate-600">
-                                                    Sin tareas
-                                                </div>
-                                            )}
-                                            {colTasks.map(task => {
-                                                const spec = SPECIALISTS.find(s => s.id === task.assignee);
-                                                return (
-                                                    <div key={task.id} className="bg-slate-900 border border-white/10 rounded-xl p-4 shadow-lg hover:border-violet-500/40 transition-all space-y-3 group">
-                                                        <div className="flex items-start justify-between gap-2">
-                                                            <h4 className="font-bold text-xs text-white leading-snug">{task.title}</h4>
-                                                            <button onClick={() => deleteTask(task.id)} className="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-1">
-                                                                <Icon name="Trash2" className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </div>
-                                                        {task.description && <p className="text-[11px] text-slate-400 line-clamp-2">{task.description}</p>}
-                                                        <div className="flex items-center justify-between pt-2 border-t border-white/5 text-[10px]">
-                                                            <span className="text-slate-400 flex items-center gap-1">
-                                                                <Icon name={spec?.icon || 'Brain'} className="w-3 h-3 text-cyan-400" /> {spec?.name}
-                                                            </span>
-                                                            <span className={`px-2 py-0.5 rounded font-bold ${
-                                                                task.priority === 'Crítica' ? 'bg-red-500/20 text-red-400' :
-                                                                task.priority === 'Alta' ? 'bg-orange-500/20 text-orange-400' :
-                                                                task.priority === 'Media' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-slate-800 text-slate-400'
-                                                            }`}>{task.priority}</span>
-                                                        </div>
-
-                                                        {/* Desplazamiento de estado */}
-                                                        <div className="flex justify-between items-center pt-2">
-                                                            {col.id !== 'todo' && (
-                                                                <button onClick={() => updateTaskStatus(task.id, col.id === 'done' ? 'review' : col.id === 'review' ? 'progress' : 'todo')} className="text-slate-500 hover:text-cyan-400 text-[10px] flex items-center gap-1">
-                                                                    <Icon name="ArrowLeft" className="w-3 h-3"/> Mover
-                                                                </button>
-                                                            )}
-                                                            <div className="flex-1"></div>
-                                                            {col.id !== 'done' && (
-                                                                <button onClick={() => updateTaskStatus(task.id, col.id === 'todo' ? 'progress' : col.id === 'progress' ? 'review' : 'done')} className="text-slate-500 hover:text-cyan-400 text-[10px] flex items-center gap-1">
-                                                                    Avanzar <Icon name="ArrowRight" className="w-3 h-3"/>
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                );
-                            })}
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* MODAL: Cargar Tarea Kanban */}
-            {showTaskModal && (
-                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden space-y-4">
-                        <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                <Icon name="Plus" className="w-5 h-5 text-cyan-400" /> Nueva Tarea Kanban
-                            </h3>
-                            <button onClick={() => setShowTaskModal(false)} className="text-slate-400 hover:text-white"><Icon name="X" className="w-5 h-5"/></button>
-                        </div>
-                        
-                        <input
-                            type="text"
-                            placeholder="Título de la tarea..."
-                            value={newTaskTitle}
-                            onChange={e => setNewTaskTitle(e.target.value)}
-                            className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-2.5 text-white text-xs focus:border-cyan-500 focus:outline-none"
-                        />
-
-                        <textarea
-                            placeholder="Descripción opcional..."
-                            value={newTaskDesc}
-                            onChange={e => setNewTaskDesc(e.target.value)}
-                            className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-2.5 text-white text-xs focus:border-cyan-500 focus:outline-none h-20 resize-none"
-                        />
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <div>
-                                <label className="text-[10px] text-slate-400 uppercase font-bold block mb-1">Especialista</label>
-                                <select 
-                                    value={newTaskAssignee} 
-                                    onChange={e => setNewTaskAssignee(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:border-cyan-500 focus:outline-none"
-                                >
-                                    {SPECIALISTS.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="text-[10px] text-slate-400 uppercase font-bold block mb-1">Prioridad</label>
-                                <select 
-                                    value={newTaskPriority} 
-                                    onChange={e => setNewTaskPriority(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:border-cyan-500 focus:outline-none"
-                                >
-                                    <option value="Baja">Baja</option>
-                                    <option value="Media">Media</option>
-                                    <option value="Alta">Alta</option>
-                                    <option value="Crítica">Crítica</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <button 
-                            onClick={handleAddTask}
-                            disabled={!newTaskTitle.trim()}
-                            className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-all text-xs"
-                        >
-                            Crear Tarea
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* MODAL: Generador Visual UI/UX (Fase 2) */}
-            {showVisualModal && (
-                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-lg shadow-2xl relative overflow-hidden space-y-4">
-                        <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                <Icon name="Palette" className="w-5 h-5 text-fuchsia-400" /> Generador Visual UI/UX
-                            </h3>
-                            <button onClick={() => setShowVisualModal(false)} className="text-slate-400 hover:text-white"><Icon name="X" className="w-5 h-5"/></button>
-                        </div>
-                        <p className="text-xs text-slate-400">Configura los parámetros estéticos para armar un prompt completo de diseño en vivo.</p>
-
-                        <div className="space-y-3">
-                            <div>
-                                <label className="text-[10px] text-slate-400 uppercase font-bold block mb-1">Estilo UI</label>
-                                <select 
-                                    value={visualStyle} 
-                                    onChange={e => setVisualStyle(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:border-fuchsia-500 focus:outline-none"
-                                >
-                                    <option value="Bento Glassmorphism">Bento Box Glassmorphism</option>
-                                    <option value="Cyberpunk Neón">Cyberpunk Neón Oscuro</option>
-                                    <option value="Aurora Dark Gradient">Aurora Dark Gradient</option>
-                                    <option value="Minimal SaaS Modern">Minimal SaaS Modern</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="text-[10px] text-slate-400 uppercase font-bold block mb-1">Esquema de Colores</label>
-                                <select 
-                                    value={visualColor} 
-                                    onChange={e => setVisualColor(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:border-fuchsia-500 focus:outline-none"
-                                >
-                                    <option value="Cyan Neón & Violeta">Cyan Neón & Violeta (#06B6D4 / #8B5CF6)</option>
-                                    <option value="Emerald & Slate">Emerald & Slate (#10B981 / #0F172A)</option>
-                                    <option value="Sunset Amber & Rose">Sunset Amber & Rose (#F59E0B / #F43F5E)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="text-[10px] text-slate-400 uppercase font-bold block mb-1">Componentes Deseados</label>
-                                <input 
-                                    type="text" 
-                                    value={visualComponents}
-                                    onChange={e => setVisualComponents(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:border-fuchsia-500 focus:outline-none"
-                                />
-                            </div>
-                        </div>
-
-                        <button 
-                            onClick={applyVisualPrompt}
-                            className="w-full bg-gradient-to-r from-fuchsia-600 to-violet-600 hover:opacity-90 text-white font-bold py-3 rounded-2xl transition-all text-xs"
-                        >
-                            Inyectar Prompt Visual al Chat
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Modal API Key */}
+            {/* Modales (API Key, Nuevo Proyecto, Analizar URL) */}
             {showKeyModal && (
                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
                     <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                <Icon name="Key" className="w-6 h-6 text-violet-400" /> API Key de Gemini
-                            </h3>
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2"><Icon name="Key" className="w-6 h-6 text-violet-400" /> API Key de Gemini</h3>
                             <button onClick={() => setShowKeyModal(false)} className="text-slate-400 hover:text-white p-1"><Icon name="X" className="w-5 h-5"/></button>
                         </div>
-                        <p className="text-sm text-slate-300 mb-6">
-                            Para usar los especialistas neurales, necesitas una API Key gratuita de <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" className="text-cyan-400 hover:underline font-bold">Google AI Studio</a>.
-                        </p>
-                        <input
-                            type="password"
-                            value={apiKey}
-                            onChange={(e) => setApiKey(e.target.value)}
-                            placeholder="AIzaSy..."
-                            className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-6 focus:border-violet-500 focus:outline-none font-mono text-sm"
-                        />
-                        <button 
-                            onClick={() => { setShowKeyModal(false); showToast("Clave API guardada"); }}
-                            className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white font-bold py-3 rounded-2xl transition-all shadow-lg text-sm"
-                        >
-                            Guardar y Conectar
-                        </button>
+                        <input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="AIzaSy..." className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-6 focus:border-violet-500 focus:outline-none font-mono text-sm" />
+                        <button onClick={() => { setShowKeyModal(false); showToast("Clave API guardada y sincronizada"); }} className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white font-bold py-3 rounded-2xl transition-all shadow-lg text-sm">Guardar y Conectar</button>
                     </div>
                 </div>
             )}
 
-            {/* Modal Nuevo Proyecto */}
             {showNewProjectModal && (
                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
                     <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                <Icon name="Plus" className="w-6 h-6 text-cyan-400" /> Nuevo Proyecto
-                            </h3>
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2"><Icon name="Plus" className="w-6 h-6 text-cyan-400" /> Nuevo Proyecto</h3>
                             <button onClick={() => setShowNewProjectModal(false)} className="text-slate-400 hover:text-white p-1"><Icon name="X" className="w-5 h-5"/></button>
                         </div>
-                        <p className="text-sm text-slate-300 mb-6">
-                            Crea un nuevo espacio de trabajo. El historial de chat y las tareas Kanban serán independientes.
-                        </p>
-                        <input
-                            type="text"
-                            value={newProjectName}
-                            onChange={(e) => setNewProjectName(e.target.value)}
-                            placeholder="Nombre del proyecto..."
-                            className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-6 focus:border-cyan-500 focus:outline-none text-sm"
-                        />
-                        <button 
-                            onClick={createNewProject}
-                            disabled={!newProjectName.trim()}
-                            className="w-full bg-gradient-to-r from-cyan-600 to-blue-500 hover:opacity-90 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-all shadow-lg text-sm"
-                        >
-                            Crear Proyecto
-                        </button>
+                        <input type="text" value={newProjectName} onChange={(e) => setNewProjectName(e.target.value)} placeholder="Nombre del proyecto..." className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-6 focus:border-cyan-500 focus:outline-none text-sm" />
+                        <button onClick={createNewProject} disabled={!newProjectName.trim()} className="w-full bg-gradient-to-r from-cyan-600 to-blue-500 hover:opacity-90 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-all shadow-lg text-sm">Crear Proyecto</button>
                     </div>
                 </div>
             )}
 
-            {/* Modal Analizar URL */}
             {showUrlModal && (
                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
                     <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                <Icon name="Link" className="w-6 h-6 text-fuchsia-400" /> Analizar URL
-                            </h3>
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2"><Icon name="Link" className="w-6 h-6 text-fuchsia-400" /> Analizar URL</h3>
                             <button onClick={() => { setShowUrlModal(false); setUrlAnalyzing(false); }} className="text-slate-400 hover:text-white p-1"><Icon name="X" className="w-5 h-5"/></button>
                         </div>
-                        <p className="text-sm text-slate-300 mb-6">
-                            Ingresa una URL para extraer contexto y estructura, y enviarlo al chat actual.
-                        </p>
-                        <input
-                            type="url"
-                            value={urlInput}
-                            onChange={(e) => setUrlInput(e.target.value)}
-                            placeholder="https://ejemplo.com"
-                            className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-6 focus:border-fuchsia-500 focus:outline-none text-sm"
-                            disabled={urlAnalyzing}
-                        />
-                        <button 
-                            onClick={analyzeUrl}
-                            disabled={!urlInput.trim() || urlAnalyzing}
-                            className="w-full bg-gradient-to-r from-fuchsia-600 to-pink-500 hover:opacity-90 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 text-sm"
-                        >
-                            {urlAnalyzing ? (
-                                <><span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></span> Analizando...</>
-                            ) : (
-                                "Analizar e Inyectar"
-                            )}
+                        <input type="url" value={urlInput} onChange={(e) => setUrlInput(e.target.value)} placeholder="https://ejemplo.com" className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-6 focus:border-fuchsia-500 focus:outline-none text-sm" disabled={urlAnalyzing} />
+                        <button onClick={analyzeUrl} disabled={!urlInput.trim() || urlAnalyzing} className="w-full bg-gradient-to-r from-fuchsia-600 to-pink-500 hover:opacity-90 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 text-sm">
+                            {urlAnalyzing ? <><span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></span> Analizando...</> : "Analizar e Inyectar"}
                         </button>
                     </div>
                 </div>
             )}
 
-            {/* Mobile Bottom Navigation */}
             <nav className="xl:hidden bg-[#020617]/95 border-t border-white/5 p-2 flex justify-around items-center shrink-0 z-40 pb-safe backdrop-blur-3xl absolute bottom-0 w-full">
                 <button onClick={() => setActiveTab('home')} className={`p-2 rounded-2xl transition-all flex flex-col items-center gap-1 ${activeTab === 'home' ? 'text-cyan-400' : 'text-slate-500'}`}>
-                    <Icon name="Zap" className="w-5 h-5" />
-                    <span className="text-[10px] font-bold">Inicio</span>
+                    <Icon name="Zap" className="w-5 h-5" /><span className="text-[10px] font-bold">Inicio</span>
                 </button>
                 <button onClick={() => setActiveTab('chat')} className={`p-2 rounded-2xl transition-all flex flex-col items-center gap-1 ${activeTab === 'chat' ? 'text-violet-400' : 'text-slate-500'}`}>
-                    <Icon name="MessageSquare" className="w-5 h-5" />
-                    <span className="text-[10px] font-bold">Chat</span>
+                    <Icon name="MessageSquare" className="w-5 h-5" /><span className="text-[10px] font-bold">Chat</span>
                 </button>
                 <button onClick={() => setActiveTab('editor')} className={`p-2 rounded-2xl transition-all flex flex-col items-center gap-1 ${activeTab === 'editor' ? 'text-fuchsia-400' : 'text-slate-500'}`}>
-                    <Icon name="Code2" className="w-5 h-5" />
-                    <span className="text-[10px] font-bold">Forja</span>
-                </button>
-                <button onClick={() => setActiveTab('prompts')} className={`p-2 rounded-2xl transition-all flex flex-col items-center gap-1 ${activeTab === 'prompts' ? 'text-fuchsia-400' : 'text-slate-500'}`}>
-                    <Icon name="Sparkles" className="w-5 h-5" />
-                    <span className="text-[10px] font-bold">Prompts</span>
-                </button>
-                <button onClick={() => setActiveTab('kanban')} className={`p-2 rounded-2xl transition-all flex flex-col items-center gap-1 ${activeTab === 'kanban' ? 'text-cyan-400' : 'text-slate-500'}`}>
-                    <Icon name="Kanban" className="w-5 h-5" />
-                    <span className="text-[10px] font-bold">Kanban</span>
+                    <Icon name="Code2" className="w-5 h-5" /><span className="text-[10px] font-bold">Forja</span>
                 </button>
             </nav>
         </div>
