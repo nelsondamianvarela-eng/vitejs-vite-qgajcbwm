@@ -1,779 +1,727 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// --- COMPONENTE DE ICONOS VECTORIALES REUTILIZABLES ---
-const Icon = ({ name, className = "w-5 h-5", strokeWidth = 1.5 }) => {
-  switch (name) {
-    case 'Zap': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
-    case 'Cloud': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>;
-    case 'Key': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4l-4 4Z"></path><path d="m21 2-9.6 9.6"></path><circle cx="7.5" cy="15.5" r="5.5"></circle></svg>;
-    case 'MessageSquare': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>;
-    case 'Sparkles': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>;
-    case 'Brain': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path></svg>;
-    case 'Building2': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path><path d="M10 6h4"></path><path d="M10 10h4"></path><path d="M10 14h4"></path><path d="M10 18h4"></path></svg>;
-    case 'Shield': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path></svg>;
-    case 'Palette': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>;
-    case 'Search': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>;
-    case 'TrendingUp': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>;
-    case 'FileText': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>;
-    case 'Compass': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>;
-    case 'Send': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>;
-    case 'Folder': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg>;
-    case 'Paperclip': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>;
-    case 'Globe': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>;
-    case 'X': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>;
-    case 'Copy': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>;
-    case 'Plus': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>;
-    case 'Image': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>;
-    case 'Settings': return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
-    default: return <svg className={className} fill="none" stroke="currentColor" strokeWidth={strokeWidth} viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle></svg>;
-  }
+const SUPABASE_URL = 'https://pkpyfpibdfpbxcabpyldj.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_uGFqmmyDqzAiEoUrnKZQbQ_6mwq8OB0';
+
+export const supabase = {
+    from: (table) => ({
+        insert: async (data) => {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error(`Supabase error: ${res.statusText}`);
+                return { error: null };
+            } catch (err) {
+                console.warn('Supabase insert warning:', err);
+                return { error: err };
+            }
+        }
+    })
 };
 
-// --- ISOTIPO NEURAL SYNAPSE ---
-const LogoMark = ({ className = "w-10 h-10" }) => (
-  <div className={`${className} rounded-2xl bg-[#1E293B] ring-1 ring-white/10 p-1.5 flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] shrink-0`}>
-    <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
-      <defs>
-        <linearGradient id="nl-synapse-grad" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#8B5CF6" />
-          <stop offset="1" stopColor="#06B6D4" />
-        </linearGradient>
-      </defs>
-      <line x1="24" y1="24" x2="24" y2="9" stroke="url(#nl-synapse-grad)" strokeWidth="2" strokeLinecap="round" />
-      <line x1="24" y1="24" x2="11" y2="32" stroke="url(#nl-synapse-grad)" strokeWidth="2" strokeLinecap="round" />
-      <line x1="24" y1="24" x2="37" y2="32" stroke="url(#nl-synapse-grad)" strokeWidth="2" strokeLinecap="round" />
-      <line x1="24" y1="24" x2="38" y2="14" stroke="url(#nl-synapse-grad)" strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
-      <circle cx="24" cy="9" r="3" fill="url(#nl-synapse-grad)" />
-      <circle cx="11" cy="32" r="3" fill="url(#nl-synapse-grad)" />
-      <circle cx="37" cy="32" r="3" fill="url(#nl-synapse-grad)" />
-      <circle cx="38" cy="14" r="2" fill="url(#nl-synapse-grad)" />
-      <circle cx="24" cy="24" r="4.5" fill="url(#nl-synapse-grad)" />
-    </svg>
-  </div>
-);
-
-const Logo = () => (
-  <div className="flex items-center gap-3 select-none">
-    <LogoMark className="w-10 h-10" />
-    <div className="leading-tight">
-      <div className="flex items-baseline gap-1.5">
-        <span className="font-extrabold text-base lg:text-lg tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
-          NeuraLink
-        </span>
-        <span className="font-mono text-[11px] lg:text-xs text-slate-400 border border-white/10 rounded-md px-1.5 py-0.5">
-          Studio
-        </span>
-      </div>
-      <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
-        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> Sincronización activa
-      </p>
-    </div>
-  </div>
-);
-
-// --- DIRECTIVAS DE ESPECIALISTAS Y REGULACIÓN TÉCNICA ---
-const SYSTEM_DIRECTIVE = `
-DIRECTIVA TÉCNICA DE PRODUCCIÓN: Eres parte del equipo de NeuraLink Studio.
-1. Responde con el stack oficial: React 18+, Vite, Tailwind CSS, y Supabase.
-2. Está estrictamente PROHIBIDO inventar funciones, sugerir paquetes no mantenidos o dar datos imprecisos.
-3. Si el usuario te proporciona adjuntos o URLs de contexto, analízalos rigurosamente.
-4. Entrega código limpio, moderno y estructurado en bloques de marcado.
-`;
-
-const SPECIALISTS = [
-  { id: 'mentor', name: 'Mentor de Negocios', icon: 'Compass', color: 'from-emerald-600 to-teal-600', system: `${SYSTEM_DIRECTIVE} Eres el Mentor de Negocios y Operaciones del estudio. Tu labor es enseñarle al fundador a administrar la empresa, optimizar el uso de NeuraLink Studio, evitar que se desenfoque y guiarlo paso a paso para exprimir el máximo valor operativo y comercial de cada proyecto.` },
-  { id: 'secretary', name: 'Secretario Neural', icon: 'FileText', color: 'from-amber-600 to-orange-600', system: `${SYSTEM_DIRECTIVE} Eres el Secretario Neural. Tu labor es llevar la bitácora, resumir avances, organizar tareas pendientes y redactar informes ejecutivos diarios sin alucinaciones, basándote puramente en el historial del proyecto.` },
-  { id: 'director', name: 'Director Neural', icon: 'Brain', color: 'from-indigo-600 to-purple-600', system: `${SYSTEM_DIRECTIVE} Eres el Director Técnico. Ofreces visión estratégica y coordinación de producto.` },
-  { id: 'designer', name: 'Diseñador UI/UX', icon: 'Palette', color: 'from-pink-600 to-rose-600', system: `${SYSTEM_DIRECTIVE} Experto en interfaces Bento UI, Glassmorphism, paletas neón y generación de maquetas visuales.` },
-  { id: 'marketing', name: 'Marketing Neuronal', icon: 'TrendingUp', color: 'from-orange-600 to-rose-600', system: `${SYSTEM_DIRECTIVE} Experto en copys persuasivos, branding disruptivo y creación de prototipos visuales de campaña.` },
-  { id: 'architect', name: 'Arquitecto Cuántico', icon: 'Building2', color: 'from-violet-600 to-purple-600', system: `${SYSTEM_DIRECTIVE} Eres el Arquitecto de Software. Diseñas la estructura de base de datos y componentes.` },
-  { id: 'security', name: 'Ciberseguridad', icon: 'Shield', color: 'from-blue-600 to-cyan-600', system: `${SYSTEM_DIRECTIVE} Auditas la seguridad, evitando vulnerabilidades XSS, CORS y leaks de API keys.` },
-  { id: 'backend', name: 'Nube de Backend', icon: 'Cloud', color: 'from-teal-600 to-green-600', system: `${SYSTEM_DIRECTIVE} Experto en Supabase (Auth, Row Level Security, Edge Functions y PostgreSQL).` },
-  { id: 'seo', name: 'Especialista SEO y PWA', icon: 'Search', color: 'from-green-600 to-emerald-600', system: `${SYSTEM_DIRECTIVE} Encargado de PWA, manifiestos instalables, metas SEO y velocidad.` },
-];
-
-export default function App() {
-  const [apiKey, setApiKey] = useState(localStorage.getItem('gemini_api_key') || '');
-  const [showApiModal, setShowApiModal] = useState(!apiKey);
-  const [activeSpec, setActiveSpec] = useState(SPECIALISTS[0]); // Arranca en el Mentor de Negocios
-  
-  // Proyectos y Estado
-  const [projects, setProjects] = useState([{ id: 'proj_default', name: 'Proyecto Principal' }]);
-  const [activeProjectId, setActiveProjectId] = useState('proj_default');
-  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
-  const [newProjectName, setNewProjectName] = useState('');
-
-  // URLs y Adjuntos
-  const [showUrlModal, setShowUrlModal] = useState(false);
-  const [urlInput, setUrlInput] = useState('');
-  
-  const [chats, setChats] = useState({});
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGeneratingVisual, setIsGeneratingVisual] = useState(false);
-  const [attachments, setAttachments] = useState([]);
-  
-  const chatEndRef = useRef(null);
-  const fileInputRef = useRef(null);
-
-  // Inicialización
-  useEffect(() => {
-    const savedProjects = localStorage.getItem('nl_projects');
-    if (savedProjects) setProjects(JSON.parse(savedProjects));
-    
-    const savedChats = localStorage.getItem('nl_chats');
-    if (savedChats) setChats(JSON.parse(savedChats));
-  }, []);
-
-  useEffect(() => {
-    if (Object.keys(chats).length > 0) {
-      localStorage.setItem('nl_chats', JSON.stringify(chats));
-    }
-  }, [chats]);
-
-  const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  useEffect(scrollToBottom, [chats, activeSpec, activeProjectId, isLoading, isGeneratingVisual]);
-
-  // Manejo de eventos de copia global
-  useEffect(() => {
-    const handleCopyClick = (e) => {
-      const btn = e.target.closest('.copy-code-btn');
-      if (btn) {
-        const codeBlock = btn.dataset.code;
-        if (codeBlock) {
-          navigator.clipboard.writeText(codeBlock);
-          btn.innerText = '¡Copiado!';
-          setTimeout(() => btn.innerText = 'Copiar Código', 2000);
-        }
-      }
-    };
-    document.addEventListener('click', handleCopyClick);
-    return () => document.removeEventListener('click', handleCopyClick);
-  }, []);
-
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setAttachments(prev => [...prev, { name: file.name, type: 'file', content: event.target.result }]);
-    };
-    reader.readAsText(file);
-    e.target.value = null;
-  };
-
-  const handleAddUrl = () => {
-    if (!urlInput.trim()) return;
-    setAttachments(prev => [...prev, { name: urlInput, type: 'url', content: `[CONTEXTO DE URL EXTERNA: ${urlInput}]` }]);
-    setUrlInput('');
-    setShowUrlModal(false);
-  };
-
-  const removeAttachment = (index) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleCreateProject = () => {
-    if (!newProjectName.trim()) return;
-    const newProj = { id: `proj_${Date.now()}`, name: newProjectName.trim() };
-    const updatedProjects = [...projects, newProj];
-    setProjects(updatedProjects);
-    setActiveProjectId(newProj.id);
-    localStorage.setItem('nl_projects', JSON.stringify(updatedProjects));
-    setNewProjectName('');
-    setShowNewProjectModal(false);
-  };
-
-  const handleGenerateDailyReport = async () => {
-    if (!apiKey) { setShowApiModal(true); return; }
-
-    let allProjectContext = "";
-    Object.keys(chats).forEach(key => {
-      if (key.startsWith(activeProjectId)) {
-        const specName = key.split('_')[1];
-        allProjectContext += `\n--- Conversación con ${specName} ---\n`;
-        chats[key].forEach(m => {
-          allProjectContext += `${m.role === 'user' ? 'Líder' : 'Especialista'}: ${m.content}\n`;
-        });
-      }
-    });
-
-    const promptText = `Genera un Informe Ejecutivo Diario profesional para el proyecto "${projects.find(p=>p.id === activeProjectId)?.name}".
-Estructura obligatoria:
-1. 📊 **Resumen Ejecutivo**
-2. ✅ **Lo que ya se hizo**
-3. ⏳ **Lo que falta por hacer**
-4. 🛡️ **Alertas o Riesgos**
-Historial analizado:\n${allProjectContext || "Sin interacciones previas registradas."}`;
-
-    const chatId = `${activeProjectId}_secretary`;
-    const userMsg = { role: 'user', content: '📋 Solicitar Informe Diario', displayInput: '📋 [Generar Informe Diario del Proyecto]', attachments: [] };
-    
-    setChats(prev => ({ ...prev, [chatId]: [...(prev[chatId] || []), userMsg] }));
-    setIsLoading(true);
-
-    try {
-      const payload = {
-        contents: [{ parts: [{ text: promptText }] }],
-        systemInstruction: { parts: [{ text: SPECIALISTS[1].system }] }
-      };
-
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      
-      const data = await res.json();
-      if (data.error) throw new Error(data.error.message);
-      
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "El secretario no pudo compilar el informe.";
-      setChats(prev => ({ ...prev, [chatId]: [...(prev[chatId] || []), { role: 'model', content: reply }] }));
-    } catch (error) {
-      setChats(prev => ({ ...prev, [chatId]: [...(prev[chatId] || []), { role: 'model', content: `❌ Error al redactar la bitácora: ${error.message}` }] }));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGenerateSampleVisual = async () => {
-    if (!input.trim() && attachments.length === 0) {
-      alert("Describe en el chat qué concepto visual o mockup deseas que el especialista te muestre.");
-      return;
-    }
-    if (!apiKey) { setShowApiModal(true); return; }
-
-    const promptText = input.trim() || `UI/UX Concept design mockup for project ${projects.find(p=>p.id === activeProjectId)?.name}, dark mode, bento style, futuristic glassmorphism, high quality 8k render.`;
-    const chatId = `${activeProjectId}_${activeSpec.id}`;
-    
-    const userMsg = { role: 'user', content: `🎨 Request Sample Visual: ${promptText}`, displayInput: `[Solicitud de Muestra Visual]: ${promptText}`, attachments: [] };
-    setChats(prev => ({ ...prev, [chatId]: [...(prev[chatId] || []), userMsg] }));
-    
-    setInput('');
-    setIsGeneratingVisual(true);
-
-    try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          instances: [{ prompt: `${promptText}, professional dark mode software dashboard, ultra detailed, modern bento UI, high resolution` }],
-          parameters: { sampleCount: 1 }
-        })
-      });
-
-      const data = await res.json();
-      if (data.error) throw new Error(data.error.message);
-
-      const base64Bytes = data.predictions?.[0]?.bytesBase64Encoded;
-      if (base64Bytes) {
-        const imageUrl = `data:image/png;base64,${base64Bytes}`;
-        const visualReply = { 
-          role: 'model', 
-          type: 'visual',
-          content: `Aquí tienes la muestra visual y concepto de diseño solicitado para **${projects.find(p=>p.id === activeProjectId)?.name}**:`,
-          imageUrl: imageUrl
-        };
-        setChats(prev => ({ ...prev, [chatId]: [...(prev[chatId] || []), visualReply] }));
-      } else {
-        throw new Error("No se pudo obtener el render de la imagen.");
-      }
-    } catch (error) {
-      setChats(prev => ({ ...prev, [chatId]: [...(prev[chatId] || []), { role: 'model', content: `❌ Error al renderizar la muestra visual: ${error.message}` }] }));
-    } finally {
-      setIsGeneratingVisual(false);
-    }
-  };
-
-  const handleSend = async () => {
-    if (!input.trim() && attachments.length === 0) return;
-    if (!apiKey) { setShowApiModal(true); return; }
-
-    let finalPrompt = input;
-    if (attachments.length > 0) {
-      const contextBlocks = attachments.map(a => `[ADJUNTO ${a.type.toUpperCase()}: ${a.name}]\n${a.content}\n`).join('\n');
-      finalPrompt = `${contextBlocks}\n\nREQUERIMIENTO DEL USUARIO:\n${input}`;
-    }
-
-    const chatId = `${activeProjectId}_${activeSpec.id}`;
-    const newMsg = { role: 'user', content: finalPrompt, displayInput: input, attachments: [...attachments] };
-    
-    setChats(prev => ({ ...prev, [chatId]: [...(prev[chatId] || []), newMsg] }));
-    setInput('');
-    setAttachments([]);
-    setIsLoading(true);
-
-    try {
-      const chatHistory = chats[chatId] || [];
-      const historyContext = chatHistory.slice(-6).map(m => `${m.role === 'user' ? 'Usuario' : activeSpec.name}: ${m.content}`).join('\n');
-      
-      const payload = {
-        contents: [{ parts: [{ text: `Historial Reciente:\n${historyContext}\n\nUsuario: ${finalPrompt}` }] }],
-        systemInstruction: { parts: [{ text: activeSpec.system }] }
-      };
-
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      
-      const data = await res.json();
-      if (data.error) throw new Error(data.error.message);
-      
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sin respuesta del especialista.";
-      setChats(prev => ({ ...prev, [chatId]: [...(prev[chatId] || []), { role: 'model', content: reply }] }));
-    } catch (error) {
-      setChats(prev => ({ ...prev, [chatId]: [...(prev[chatId] || []), { role: 'model', content: `❌ Error de Comunicación Neural: ${error.message}` }] }));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const renderFormattedText = (msg) => {
-    if (msg.type === 'visual') {
-      return (
-        <div className="space-y-3">
-          <p className="text-xs sm:text-sm text-slate-200">{msg.content}</p>
-          <div className="rounded-2xl overflow-hidden border border-cyan-500/30 shadow-2xl bg-slate-950/80 group relative">
-            <img src={msg.imageUrl} alt="Muestra Visual NeuraLink" className="w-full h-auto max-h-[400px] object-cover transition-transform duration-500 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex items-end justify-between">
-              <span className="text-[10px] text-cyan-300 font-mono">Render de Concepto 8K</span>
-              <a href={msg.imageUrl} download="neuralink-concept.png" className="text-xs bg-cyan-500 text-slate-950 px-3 py-1.5 rounded-lg font-bold hover:bg-cyan-400 transition-colors">
-                Descargar PNG
-              </a>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    const text = msg.content;
-    if (!text) return null;
-    const parts = text.split(/(```[\s\S]*?```)/g);
-    
-    return parts.map((part, index) => {
-      if (part.startsWith('```')) {
-        const match = part.match(/```(\w*)\n([\s\S]*?)```/);
-        const language = match ? match[1] : '';
-        const code = match ? match[2] : part.replace(/```/g, '');
-        
-        return (
-          <div key={index} className="relative my-4 rounded-2xl overflow-hidden border border-white/10 bg-[#080d1a] shadow-xl">
-            <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900/90 border-b border-white/5">
-              <span className="text-xs font-mono text-cyan-400/80 font-bold uppercase">{language || 'código'}</span>
-              <button 
-                data-code={code}
-                className="copy-code-btn text-xs bg-white/5 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 px-3 py-1.5 rounded-lg border border-white/10 transition-all flex items-center gap-1.5"
-              >
-                <Icon name="Copy" className="w-3.5 h-3.5 pointer-events-none" /> Copiar Código
-              </button>
-            </div>
-            <pre className="p-4 overflow-x-auto text-xs sm:text-sm font-mono text-slate-200 leading-relaxed whitespace-pre custom-scrollbar">
-              {code}
-            </pre>
-          </div>
-        );
-      }
-      return (
-        <p key={index} className="mb-2 whitespace-pre-wrap leading-relaxed text-slate-300 text-sm" dangerouslySetInnerHTML={{ 
-          __html: part.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>') 
-        }} />
-      );
-    });
-  };
-
-  const currentChatId = `${activeProjectId}_${activeSpec.id}`;
-  const currentChat = chats[currentChatId] || [];
-
+// --- NUEVO LOGO INTEGRADO (Variante: Synapse por defecto) ---
+export function LogoMark({ variant = "synapse", className = "w-10 h-10" }) {
+  const gid = `nl-${variant}`;
   return (
-    <div className="min-h-[100dvh] bg-[#020617] text-slate-200 font-sans flex flex-col md:flex-row overflow-hidden selection:bg-cyan-500/30">
-      
-      {/* SIDEBAR BENTO */}
-      <aside className="w-full md:w-80 bg-slate-900/40 backdrop-blur-3xl border-r border-white/5 flex flex-col shrink-0 relative z-20">
-        <div className="p-5 border-b border-white/5 flex items-center justify-between">
-          <Logo />
-          <button 
-            onClick={() => setShowApiModal(true)} 
-            className="p-2 rounded-xl bg-slate-800/40 hover:bg-slate-800 text-slate-500 hover:text-cyan-400 transition-colors"
-            title="Ajustes de Conexión"
-          >
-            <Icon name="Settings" className="w-4 h-4" />
-          </button>
-        </div>
-        
-        {/* SELECTOR DE PROYECTO BENTO */}
-        <div className="p-4 border-b border-white/5 bg-slate-900/30">
-          <div className="flex items-center justify-between mb-2 px-1">
-            <p className="text-[10px] uppercase font-bold tracking-wider text-slate-500 flex items-center gap-1.5">
-              <Icon name="Folder" className="w-3.5 h-3.5 text-cyan-400" /> Cliente / Proyecto
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <select 
-              value={activeProjectId} 
-              onChange={(e) => setActiveProjectId(e.target.value)}
-              className="flex-1 bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 appearance-none font-medium cursor-pointer"
-            >
-              {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
-            <button 
-              onClick={() => setShowNewProjectModal(true)} 
-              className="bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl px-3 flex items-center justify-center transition-all text-cyan-400 hover:text-cyan-300" 
-              title="Nuevo Proyecto"
-            >
-              <Icon name="Plus" className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+    <div className={`${className} rounded-2xl bg-[#1E293B] ring-1 ring-white/10 p-1.5 flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] shrink-0`}>
+      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" aria-label="NeuraLink Studio">
+        <defs>
+          <linearGradient id={gid} x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stopColor="#8B5CF6" />
+            <stop offset="1" stopColor="#06B6D4" />
+          </linearGradient>
+        </defs>
 
-        {/* LISTA DE ESPECIALISTAS (MENTOR Y SECRETARIO ARRIBA) */}
-        <div className="p-4 flex-1 overflow-y-auto space-y-2 custom-scrollbar">
-          <p className="text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-3 px-1">Dirección & Mentoría</p>
-          {SPECIALISTS.map(spec => (
-            <button 
-              key={spec.id} 
-              onClick={() => setActiveSpec(spec)}
-              className={`w-full text-left p-3 rounded-2xl flex items-center gap-3 transition-all group ${activeSpec.id === spec.id ? 'bg-slate-800/80 border border-white/10 shadow-lg shadow-cyan-500/5' : 'hover:bg-slate-800/30 border border-transparent'}`}
-            >
-              <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${spec.color} bg-opacity-20 border border-white/10 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105`}>
-                <Icon name={spec.icon} className={`w-5 h-5 ${activeSpec.id === spec.id ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className={`text-xs font-bold truncate ${activeSpec.id === spec.id ? 'text-white' : 'text-slate-300'}`}>{spec.name}</p>
-                <p className="text-[10px] text-slate-500 truncate">{spec.id === 'mentor' ? 'Enfoque & Administración' : spec.id === 'secretary' ? 'Bitácora & Informes' : spec.id === 'designer' || spec.id === 'marketing' ? 'Generador Visual' : 'Agente Técnico'}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-      </aside>
+        {variant === "portal" && (
+          <>
+            <polygon points="24,10 36.12,17 36.12,31 24,38 11.88,31 11.88,17" stroke={`url(#${gid})`} strokeWidth="2.4" strokeLinejoin="round" />
+            <line x1="24" y1="24" x2="24" y2="10" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
+            <line x1="24" y1="24" x2="36.12" y2="31" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
+            <line x1="24" y1="24" x2="11.88" y2="31" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
+            <circle cx="24" cy="24" r="4" fill={`url(#${gid})`} />
+          </>
+        )}
 
-      {/* PANEL PRINCIPAL DE INTERACCIÓN */}
-      <main className="flex-1 flex flex-col h-screen relative overflow-hidden">
-        
-        {/* Fondo Aurora Minimalista */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[140px] animate-[pulse_8s_ease-in-out_infinite]" />
-          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[140px] animate-[pulse_8s_ease-in-out_infinite]" style={{ animationDelay: '4s' }} />
-        </div>
+        {variant === "synapse" && (
+          <>
+            <line x1="24" y1="24" x2="24" y2="9"  stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+            <line x1="24" y1="24" x2="11" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+            <line x1="24" y1="24" x2="37" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+            <line x1="24" y1="24" x2="38" y2="14" stroke={`url(#${gid})`} strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
+            <circle cx="24" cy="9"  r="3"   fill={`url(#${gid})`} />
+            <circle cx="11" cy="32" r="3"   fill={`url(#${gid})`} />
+            <circle cx="37" cy="32" r="3"   fill={`url(#${gid})`} />
+            <circle cx="38" cy="14" r="2"   fill={`url(#${gid})`} />
+            <circle cx="24" cy="24" r="4.5" fill={`url(#${gid})`} />
+          </>
+        )}
 
-        {/* HEADER TOP BENTO */}
-        <header className="h-16 border-b border-white/5 bg-slate-900/40 backdrop-blur-xl flex items-center justify-between px-6 shrink-0 relative z-10">
-          <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-lg bg-gradient-to-tr ${activeSpec.color} flex items-center justify-center`}>
-              <Icon name={activeSpec.icon} className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                {activeSpec.name}
-              </h2>
-              <p className="text-[10px] text-slate-400">Proyecto: <strong className="text-cyan-400 font-medium">{projects.find(p=>p.id === activeProjectId)?.name}</strong></p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {activeSpec.id === 'secretary' && (
-              <button 
-                onClick={handleGenerateDailyReport}
-                disabled={isLoading}
-                className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-extrabold text-xs px-4 py-2 rounded-xl flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)]"
-              >
-                <Icon name="FileText" className="w-4 h-4 text-slate-950" />
-                <span>Generar Informe Diario</span>
-              </button>
-            )}
-            <span className="text-[10px] bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 px-3 py-1 rounded-full font-mono hidden sm:flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> Sincronizado
-            </span>
-          </div>
-        </header>
-
-        {/* CHAT BENTO AREA */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 relative z-10 custom-scrollbar">
-          {currentChat.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center max-w-xl mx-auto text-center space-y-6 py-12">
-              <div className={`w-16 h-16 rounded-2xl bg-gradient-to-tr ${activeSpec.color} flex items-center justify-center opacity-90 shadow-lg shadow-cyan-500/10`}>
-                <Icon name={activeSpec.icon} className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-2">
-                  {activeSpec.id === 'mentor' ? 'Tu Mentor de Negocios y Operaciones' : activeSpec.id === 'secretary' ? 'Bitácora & Agenda del Proyecto' : `Canal con ${activeSpec.name}`}
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  {activeSpec.id === 'mentor' 
-                    ? 'Pregúntame cómo organizar tu empresa, mantener el foco y exprimir el máximo valor operativo de NeuraLink Studio.'
-                    : activeSpec.id === 'secretary' 
-                    ? 'Mantén el control total. Pide al Secretario un reporte diario de lo hecho y lo pendiente.' 
-                    : `Canal de trabajo aislado para el proyecto ${projects.find(p=>p.id === activeProjectId)?.name}.`}
-                </p>
-              </div>
-
-              {/* Chips de Inicio Rápido */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
-                {activeSpec.id === 'mentor' ? (
-                  <>
-                    <button 
-                      onClick={() => setInput('¿Cómo puedo organizar mi día y estructurar mis tareas para no desenfoque y sacar adelante este proyecto en tiempo récord?')}
-                      className="bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 p-3.5 rounded-2xl transition-all group col-span-2"
-                    >
-                      <p className="text-xs font-bold text-emerald-400 mb-1 group-hover:translate-x-0.5 transition-transform">🧭 Guía Anti-Desenfoque & Productividad</p>
-                      <p className="text-[11px] text-slate-400">Establece un plan operativo diario claro y sin distracciones.</p>
-                    </button>
-                  </>
-                ) : activeSpec.id === 'secretary' ? (
-                  <>
-                    <button 
-                      onClick={handleGenerateDailyReport}
-                      className="bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 p-3.5 rounded-2xl transition-all group col-span-2"
-                    >
-                      <p className="text-xs font-bold text-amber-400 mb-1 group-hover:translate-x-0.5 transition-transform">📋 Compilar Informe Diario</p>
-                      <p className="text-[11px] text-slate-400">Analiza todas las conversaciones y genera la agenda de pendientes.</p>
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button 
-                      onClick={() => setInput('Genera la maqueta y código del Hero section para este proyecto.')}
-                      className="bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 p-3.5 rounded-2xl transition-all group"
-                    >
-                      <p className="text-xs font-bold text-cyan-400 mb-1 group-hover:translate-x-0.5 transition-transform">⚡ Prototipo de Código</p>
-                      <p className="text-[11px] text-slate-400">Genera la estructura de componentes React + Tailwind.</p>
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setInput('Dark mode luxury app UI mockup, glassmorphism bento card layout');
-                        setTimeout(() => handleGenerateSampleVisual(), 100);
-                      }}
-                      className="bg-slate-900/60 hover:bg-slate-800/80 border border-pink-500/20 p-3.5 rounded-2xl transition-all group"
-                    >
-                      <p className="text-xs font-bold text-pink-400 mb-1 group-hover:translate-x-0.5 transition-transform">🎨 Generar Muestra Visual 8K</p>
-                      <p className="text-[11px] text-slate-400">Crea una imagen de concepto UI para mostrar al cliente.</p>
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          ) : (
-            currentChat.map((msg, i) => (
-              <div key={i} className={`flex gap-3 sm:gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                <div className={`w-9 h-9 rounded-xl shrink-0 flex items-center justify-center ${msg.role === 'user' ? 'bg-slate-800 border border-white/10' : `bg-gradient-to-tr ${activeSpec.color}`}`}>
-                  {msg.role === 'user' ? <Icon name="Zap" className="w-4 h-4 text-cyan-400" /> : <Icon name={activeSpec.icon} className="w-4 h-4 text-white" />}
-                </div>
-                <div className={`max-w-[85%] rounded-2xl p-4 sm:p-5 ${msg.role === 'user' ? 'bg-slate-800/90 text-white border border-white/10' : 'bg-slate-900/60 border border-cyan-500/20 backdrop-blur-xl shadow-xl'}`}>
-                  
-                  {msg.role === 'user' && msg.attachments?.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-3 pb-2 border-b border-white/10">
-                      {msg.attachments.map((att, idx) => (
-                        <span key={idx} className="text-[10px] bg-slate-900/80 border border-white/10 px-2.5 py-1 rounded-lg text-cyan-300 flex items-center gap-1 font-mono">
-                          <Icon name={att.type === 'url' ? 'Globe' : 'Paperclip'} className="w-3 h-3 text-cyan-400" /> {att.name}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {msg.role === 'user' ? <p className="whitespace-pre-wrap text-xs sm:text-sm">{msg.displayInput || msg.content}</p> : renderFormattedText(msg)}
-                </div>
-              </div>
-            ))
-          )}
-
-          {isLoading && (
-            <div className="flex gap-4">
-              <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${activeSpec.color} flex items-center justify-center animate-pulse`}>
-                <Icon name={activeSpec.icon} className="w-4 h-4 text-white" />
-              </div>
-              <div className="bg-slate-900/60 border border-cyan-500/20 rounded-2xl p-4 flex items-center gap-2 backdrop-blur-xl">
-                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></span>
-                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce delay-75"></span>
-                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce delay-150"></span>
-              </div>
-            </div>
-          )}
-
-          {isGeneratingVisual && (
-            <div className="flex gap-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-600 to-rose-600 flex items-center justify-center animate-pulse">
-                <Icon name="Image" className="w-4 h-4 text-white" />
-              </div>
-              <div className="bg-slate-900/60 border border-pink-500/30 rounded-2xl p-5 flex flex-col gap-2 backdrop-blur-xl max-w-sm">
-                <div className="flex items-center gap-2">
-                  <Icon name="Sparkles" className="w-4 h-4 text-pink-400 animate-spin" />
-                  <span className="text-xs font-bold text-pink-300">Renderizando Muestra Visual 8K...</span>
-                </div>
-                <p className="text-[11px] text-slate-400">Generando concepto de alta calidad para presentación.</p>
-              </div>
-            </div>
-          )}
-
-          <div ref={chatEndRef} />
-        </div>
-
-        {/* INPUT DE MANDO BENTO */}
-        <div className="p-4 sm:p-6 bg-slate-900/80 backdrop-blur-2xl border-t border-white/5 relative z-10 shrink-0">
-          <div className="max-w-4xl mx-auto">
-            
-            {attachments.length > 0 && (
-              <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
-                {attachments.map((att, idx) => (
-                  <div key={idx} className="bg-slate-800 border border-cyan-500/30 rounded-xl px-3 py-1.5 flex items-center gap-2 text-xs text-slate-200 shadow-sm">
-                    <Icon name={att.type === 'url' ? 'Globe' : 'Paperclip'} className="w-3.5 h-3.5 text-cyan-400" />
-                    <span className="truncate max-w-[160px] font-mono text-[11px]">{att.name}</span>
-                    <button onClick={() => removeAttachment(idx)} className="text-slate-400 hover:text-red-400"><Icon name="X" className="w-3.5 h-3.5" /></button>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            <div className="flex gap-2.5 items-end">
-              <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".txt,.json,.js,.jsx,.html,.css,.md" />
-              
-              <button 
-                onClick={() => fileInputRef.current?.click()} 
-                className="p-3.5 rounded-2xl bg-slate-800/80 border border-white/10 hover:border-cyan-500/40 text-slate-400 hover:text-cyan-400 transition-all shrink-0" 
-                title="Adjuntar archivo local"
-              >
-                <Icon name="Paperclip" className="w-4 h-4" />
-              </button>
-
-              <button 
-                onClick={() => setShowUrlModal(true)} 
-                className="p-3.5 rounded-2xl bg-slate-800/80 border border-white/10 hover:border-cyan-500/40 text-slate-400 hover:text-cyan-400 transition-all shrink-0" 
-                title="Ingresar enlace de cliente"
-              >
-                <Icon name="Globe" className="w-4 h-4" />
-              </button>
-
-              {activeSpec.id !== 'secretary' && activeSpec.id !== 'mentor' && (
-                <button 
-                  onClick={handleGenerateSampleVisual} 
-                  disabled={isGeneratingVisual || isLoading}
-                  className="p-3.5 rounded-2xl bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-500/30 hover:border-pink-500/60 text-pink-300 hover:text-white transition-all shrink-0 flex items-center gap-1.5 font-bold text-xs" 
-                  title="Generar Muestra Visual 8K"
-                >
-                  <Icon name="Image" className="w-4 h-4 text-pink-400" />
-                  <span className="hidden lg:inline">Visual 8K</span>
-                </button>
-              )}
-
-              <div className="flex-1 relative">
-                <textarea 
-                  value={input} 
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-                  placeholder={activeSpec.id === 'mentor' ? "Consúltale al Mentor de Negocios cómo enfocar tu día..." : activeSpec.id === 'secretary' ? "Indícale al secretario qué registrar en la agenda..." : `Instrucción para ${activeSpec.name}...`}
-                  className="w-full bg-slate-950/60 border border-white/10 rounded-2xl px-4 py-3.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 resize-none min-h-[48px] max-h-32 transition-colors custom-scrollbar"
-                  rows={1}
-                />
-              </div>
-
-              <button 
-                onClick={handleSend} 
-                disabled={isLoading || isGeneratingVisual || (!input.trim() && attachments.length === 0)}
-                className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-5 py-3.5 rounded-2xl font-bold flex items-center gap-2 disabled:opacity-40 disabled:grayscale transition-all shadow-[0_0_20px_rgba(34,211,238,0.25)] hover:shadow-[0_0_25px_rgba(34,211,238,0.4)] shrink-0"
-              >
-                <span className="hidden sm:inline text-xs uppercase tracking-wider font-extrabold">Enviar</span>
-                <Icon name="Send" className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </main>
-
-      {/* MODAL CONFIGURACIÓN API KEY */}
-      {showApiModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative">
-            <button onClick={() => setShowApiModal(false)} className="absolute top-5 right-5 text-slate-500 hover:text-white">
-              <Icon name="X" className="w-5 h-5" />
-            </button>
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5">
-              <Icon name="Key" className="w-6 h-6 text-cyan-400" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">Ajuste de Conexión Neural</h2>
-            <p className="text-slate-400 text-xs mb-5 leading-relaxed">Configura la clave de Gemini API. Una vez guardada, no volverá a mostrarse públicamente en la interfaz.</p>
-            <input 
-              type="password" 
-              value={apiKey} 
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Clave API de Gemini..."
-              className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-xs text-white mb-4 focus:border-cyan-500 focus:outline-none font-mono"
-            />
-            <button 
-              onClick={() => { localStorage.setItem('gemini_api_key', apiKey); setShowApiModal(false); }}
-              className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 rounded-xl transition-colors text-xs uppercase tracking-wider"
-            >
-              Guardar y Ocultar
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL NUEVO PROYECTO */}
-      {showNewProjectModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl relative">
-            <button onClick={() => setShowNewProjectModal(false)} className="absolute top-5 right-5 text-slate-500 hover:text-white">
-              <Icon name="X" className="w-5 h-5" />
-            </button>
-            <div className="w-12 h-12 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4">
-              <Icon name="Folder" className="w-6 h-6 text-violet-400" />
-            </div>
-            <h2 className="text-lg font-bold text-white mb-1">Nuevo Proyecto / Cliente</h2>
-            <p className="text-slate-400 text-xs mb-4">Aísla los chats y la agenda para este cliente.</p>
-            <input 
-              type="text" 
-              value={newProjectName} 
-              onChange={(e) => setNewProjectName(e.target.value)}
-              placeholder="Ej: Inmobiliaria Delta, E-commerce Z..."
-              className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-xs text-white mb-4 focus:border-violet-500 focus:outline-none"
-            />
-            <button 
-              onClick={handleCreateProject}
-              className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl transition-colors text-xs uppercase tracking-wider"
-            >
-              Crear Proyecto
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL INGRESAR URL */}
-      {showUrlModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl relative">
-            <button onClick={() => setShowUrlModal(false)} className="absolute top-5 right-5 text-slate-500 hover:text-white">
-              <Icon name="X" className="w-5 h-5" />
-            </button>
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-4">
-              <Icon name="Globe" className="w-6 h-6 text-cyan-400" />
-            </div>
-            <h2 className="text-lg font-bold text-white mb-1">Inyectar Contexto URL</h2>
-            <p className="text-slate-400 text-xs mb-4">Pega el enlace de la web del cliente o competencia para auditar.</p>
-            <input 
-              type="url" 
-              value={urlInput} 
-              onChange={(e) => setUrlInput(e.target.value)}
-              placeholder="https://ejemplo.com"
-              className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-xs text-white mb-4 focus:border-cyan-500 focus:outline-none"
-            />
-            <button 
-              onClick={handleAddUrl}
-              className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 rounded-xl transition-colors text-xs uppercase tracking-wider"
-            >
-              Vincular al Chat
-            </button>
-          </div>
-        </div>
-      )}
-
-      <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
-      `}} />
+        {variant === "nexus" && (
+          <>
+            <line x1="11" y1="24" x2="37" y2="24" stroke={`url(#${gid})`} strokeWidth="2.4" strokeLinecap="round" />
+            <circle cx="11" cy="24" r="4" fill={`url(#${gid})`} />
+            <circle cx="37" cy="24" r="4" fill={`url(#${gid})`} />
+            <path d="M24 19 L29 24 L24 29 L19 24 Z" fill={`url(#${gid})`} />
+            <path d="M24 21.6 L26.4 24 L24 26.4 L21.6 24 Z" fill="#0B1220" />
+          </>
+        )}
+      </svg>
     </div>
   );
+}
+
+export function Logo({ withTagline = false }) {
+  return (
+    <div className="flex items-center gap-3 select-none">
+      <LogoMark variant="synapse" className="w-10 h-10" />
+      <div className="leading-tight">
+        <div className="flex items-baseline gap-1.5">
+          <span className="font-extrabold text-base lg:text-lg tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+            NeuraLink
+          </span>
+          <span className="font-mono text-[11px] lg:text-xs text-slate-400 border border-white/10 rounded-md px-1.5 py-0.5">
+            Studio
+          </span>
+        </div>
+        {withTagline ? (
+          <p className="text-[10px] text-cyan-400/80 font-medium mt-0.5 tracking-wide">Conectando mentes, creando apps</p>
+        ) : (
+          <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> Sincronización neural activa
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const Icon = ({ name, className = "w-5 h-5" }) => {
+    switch (name) {
+        case 'Zap': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>;
+        case 'Cloud': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" /></svg>;
+        case 'Key': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" /></svg>;
+        case 'MessageSquare': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>;
+        case 'Sparkles': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /></svg>;
+        case 'Palette': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.504 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>;
+        case 'Kanban': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 3v18M18 3v18M4 7h4M4 11h4M4 15h4M16 7h4M16 11h4M16 15h4"/></svg>;
+        case 'Code2': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m18 16 4-4-4-4M6 8l-4 4 4 4m10-12-4 16"/></svg>;
+        case 'Brain': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/></svg>;
+        case 'Building2': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>;
+        case 'Shield': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
+        case 'Search': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
+        case 'TrendingUp': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>;
+        case 'Camera': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>;
+        case 'Mic': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="19" y2="23"/><line x1="8" x2="16" y1="23" y2="23"/></svg>;
+        case 'Send': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>;
+        case 'Volume2': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>;
+        case 'Rocket': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 3 0 3 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-3 0-3"/></svg>;
+        case 'Monitor': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>;
+        case 'X': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>;
+        case 'Layout': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>;
+        default: return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>;
+    }
+};
+
+const safeSpeak = (text) => {
+    try {
+        if (!('speechSynthesis' in window)) return false;
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'es-ES';
+        utter.rate = 1.05;
+        window.speechSynthesis.speak(utter);
+        return true;
+    } catch(e) { return false; }
+};
+
+const SPECIALISTS = [
+    { id: 'director', name: 'Director Neural', icon: 'Brain', color: 'from-indigo-600 to-purple-600', bio: 'Liderazgo y estrategia autónoma', system: 'Eres el Director Neural de NeuraLink Studio. Lideras la arquitectura de software futurista, coordinas al equipo técnico y tomas decisiones ejecutivas. Responde en español con visión disruptiva, ejecutiva y precisa.' },
+    { id: 'architect', name: 'Arquitecto Cuántico', icon: 'Building2', color: 'from-violet-600 to-purple-600', bio: 'Estructuras PWA y escalabilidad', system: 'Eres el Arquitecto Cuántico senior. Diseñas estructuras web ultraligeras, seguras y optimizadas para celulares. Responde en español con rigor técnico avanzado.' },
+    { id: 'security', name: 'Ciberseguridad', icon: 'Shield', color: 'from-blue-600 to-cyan-600', bio: 'Protección y robustez frontend', system: 'Eres experto en ciberseguridad web y protección de datos. Aseguras que cada línea sea robusta y resistente a ataques.' },
+    { id: 'backend', name: 'Nube de Backend', icon: 'Cloud', color: 'from-teal-600 to-green-600', bio: 'APIs, estado y persistencia Supabase', system: 'Eres experto en sincronización Supabase, persistencia neural cloud y optimización de rendimiento web. Responde en español técnico.' },
+    { id: 'designer', name: 'Diseñador UI/UX', icon: 'Palette', color: 'from-pink-600 to-rose-600', bio: 'Estética neón y UX inmersiva', system: 'Eres Diseñador UI/UX experto en estética cyberpunk, gradientes cian/violeta y usabilidad móvil impecable. Responde en español.' },
+    { id: 'seo', name: 'Especialista SEO y PWA', icon: 'Search', color: 'from-green-600 to-emerald-600', bio: 'Optimización y metadatos móviles', system: 'Eres experto en SEO técnico y conversión de webs en aplicaciones móviles nativas PWA. Responde en español.' },
+    { id: 'marketing', name: 'Marketing Neuronal', icon: 'TrendingUp', color: 'from-orange-600 to-red-600', bio: 'Estrategia de impacto', system: 'Eres experto en Marketing Digital y propuestas de valor disruptivas. Responde en español.' }
+];
+
+const callGeminiAPI = async (specialist, messages, images = [], currentCode = '', apiKey = '') => {
+    const key = apiKey || localStorage.getItem('neuralink_gemini_key') || '';
+    if (!key) {
+        throw new Error('Por favor ingresa tu clave API de Google AI Studio haciendo clic en "Clave API" arriba.');
+    }
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${key}`;
+    
+    const contents = [];
+    messages.forEach((m, idx) => {
+        const parts = [];
+        if (m.images && m.images.length > 0 && idx === messages.length - 1) {
+            m.images.forEach(img => {
+                parts.push({ inline_data: { mime_type: img.mime, data: img.data } });
+            });
+        }
+        parts.push({ text: m.text });
+        contents.push({ role: m.role === 'user' ? 'user' : 'model', parts });
+    });
+
+    if (currentCode) {
+        contents.push({
+            role: 'user',
+            parts: [{ text: `[Contexto actual del código en NeuraLink Studio]\n\`\`\`html\n${currentCode}\n\`\`\`` }]
+        });
+    }
+
+    const payload = {
+        contents,
+        systemInstruction: { parts: [{ text: specialist.system }] },
+        generationConfig: { temperature: 0.4, maxOutputTokens: 8192 }
+    };
+
+    let response;
+    let delay = 1000;
+    for (let i = 0; i < 4; i++) {
+        try {
+            response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (response.ok) break;
+        } catch (e) {}
+        await new Promise(res => setTimeout(res, delay));
+        delay *= 2;
+    }
+
+    if (!response || !response.ok) {
+        const errData = await response?.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `Error HTTP ${response?.status || 500}. Verifica tu clave API o espera unos segundos.`);
+    }
+
+    const data = await response.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '(Sin respuesta del especialista)';
+};
+
+const fileToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve({ data: reader.result.split(',')[1], mime: file.type });
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+});
+
+// --- SEGURIDAD: Función renderFormattedText con protección anti-XSS ---
+const renderFormattedText = (text) => {
+    if (!text) return '';
+    
+    // 1. Escapar HTML peligroso primero (Protección Ciberseguridad)
+    let safeText = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+    // 2. Aplicar el formato markdown seguro
+    let formatted = safeText
+        .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-slate-950/90 p-3 rounded-2xl my-2 overflow-x-auto border border-cyan-500/20 text-xs font-mono text-cyan-300"><code>$2</code></pre>')
+        .replace(/`([^`]+)`/g, '<code class="bg-slate-900 text-cyan-400 px-1.5 py-0.5 rounded text-xs font-mono border border-cyan-500/10">$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
+        .replace(/\n\n/g, '</p><p class="mt-2">')
+        .replace(/\n/g, '<br/>');
+    return `<p>${formatted}</p>`;
+};
+
+export default function App() {
+    const [apiKey, setApiKey] = useState(() => localStorage.getItem('neuralink_gemini_key') || '');
+    const [showKeyModal, setShowKeyModal] = useState(false);
+    const [activeTab, setActiveTab] = useState('home');
+    const [activeSpecialist, setActiveSpecialist] = useState('director');
+    
+    const [syncToken, setSyncToken] = useState(() => localStorage.getItem('neuralink_sync_token') || 'NL-67P5');
+    const [showSyncModal, setShowSyncModal] = useState(false);
+
+    const [chats, setChats] = useState(() => {
+        try {
+            const saved = localStorage.getItem('neuralink_neural_chats');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (typeof parsed === 'object' && parsed !== null) return parsed;
+            }
+        } catch(e) {}
+        return {};
+    });
+    
+    const [tasks, setTasks] = useState(() => {
+        try {
+            const saved = localStorage.getItem('neuralink_neural_tasks');
+            return saved ? JSON.parse(saved) : [
+                { id: 1, title: 'Definir arquitectura principal con Supabase', assignee: 'director', status: 'done' },
+                { id: 2, title: 'Generar conceptos visuales con Neón Cyan', assignee: 'designer', status: 'progress' },
+                { id: 3, title: 'Optimizar PWA y sincronización cloud', assignee: 'seo', status: 'todo' }
+            ];
+        } catch(e) { return []; }
+    });
+
+    const [sandboxCode, setSandboxCode] = useState(() => {
+        return localStorage.getItem('neuralink_neural_code') || `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuraLink Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-[#020617] text-white min-h-[100dvh] flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.1)_0,transparent_70%)] pointer-events-none"></div>
+    <div class="text-center space-y-4 relative z-10 max-w-lg p-8 rounded-3xl bg-slate-900/40 border border-white/5 backdrop-blur-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+        <h1 class="text-3xl font-extrabold text-white">NeuraLink Studio</h1>
+        <p class="text-slate-300 text-sm">Conectando mentes, creando apps.</p>
+    </div>
+</body>
+</html>`;
+    });
+
+    const [previewCode, setPreviewCode] = useState(sandboxCode);
+    const [inputMsg, setInputMsg] = useState('');
+    const [images, setImages] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isListening, setIsListening] = useState(false);
+
+    useEffect(() => {
+        try { localStorage.setItem('neuralink_neural_chats', JSON.stringify(chats)); } catch(e) {}
+    }, [chats]);
+
+    useEffect(() => {
+        try { localStorage.setItem('neuralink_neural_tasks', JSON.stringify(tasks)); } catch(e) {}
+    }, [tasks]);
+
+    useEffect(() => {
+        try { localStorage.setItem('neuralink_neural_code', sandboxCode); } catch(e) {}
+    }, [sandboxCode]);
+
+    useEffect(() => {
+        try { localStorage.setItem('neuralink_gemini_key', apiKey); } catch(e) {}
+    }, [apiKey]);
+
+    useEffect(() => {
+        try { localStorage.setItem('neuralink_sync_token', syncToken); } catch(e) {}
+    }, [syncToken]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setPreviewCode(sandboxCode);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [sandboxCode]);
+
+    const chatBottomRef = useRef(null);
+    const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        if (activeTab === 'chat') {
+            chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [chats, activeSpecialist, loading, activeTab]);
+
+    const toggleVoiceRecognition = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return;
+        if (isListening) {
+            setIsListening(false);
+            return;
+        }
+        try {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.onstart = () => setIsListening(true);
+            recognition.onresult = (event) => {
+                const speechText = event.results[0][0].transcript;
+                setInputMsg(prev => prev ? `${prev} ${speechText}` : speechText);
+                setIsListening(false);
+            };
+            recognition.onerror = () => setIsListening(false);
+            recognition.onend = () => setIsListening(false);
+            recognition.start();
+        } catch(e) {
+            setIsListening(false);
+        }
+    };
+
+    const handleImageSelect = async (e) => {
+        const files = Array.from(e.target.files);
+        const processed = await Promise.all(files.map(fileToBase64));
+        setImages(prev => [...prev, ...processed.map((p, i) => ({ ...p, name: files[i].name, preview: URL.createObjectURL(files[i]) }))]);
+        e.target.value = '';
+    };
+
+    const handleSendMessage = async () => {
+        if (!inputMsg.trim() && images.length === 0) return;
+        if (!apiKey.trim()) {
+            setShowKeyModal(true);
+            return;
+        }
+
+        const spec = SPECIALISTS.find(s => s.id === activeSpecialist);
+        const promptText = inputMsg || '(Imagen adjunta)';
+
+        const userMessage = { 
+            role: 'user', 
+            text: promptText, 
+            images: images.map(i => ({ name: i.name, preview: i.preview })),
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+        };
+        
+        const currentSpecChat = chats[activeSpecialist] || [];
+        const updatedChat = [...currentSpecChat, userMessage];
+        setChats(prev => ({ ...prev, [activeSpecialist]: updatedChat }));
+
+        setInputMsg('');
+        const currentImages = [...images];
+        setImages([]);
+        setLoading(true);
+        setErrorMsg('');
+
+        try {
+            const replyText = await callGeminiAPI(spec, updatedChat, currentImages, sandboxCode, apiKey);
+            const botMessage = { role: 'model', text: replyText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+            const finalChat = [...updatedChat, botMessage];
+            setChats(prev => ({ ...prev, [activeSpecialist]: finalChat }));
+
+            try {
+                await supabase.from('neuralink_logs').insert([
+                    { token: syncToken, specialist: activeSpecialist, prompt: promptText, response: replyText }
+                ]);
+            } catch(dbErr) {}
+
+        } catch (err) {
+            setErrorMsg(`Error: ${err.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const extractAndApplyCode = (text) => {
+        const codeMatch = text.match(/```(?:html|xml)?\n([\s\S]*?)```/);
+        if (codeMatch && codeMatch[1]) {
+            setSandboxCode(codeMatch[1]);
+            setActiveTab('editor');
+        }
+    };
+
+    const currentSpec = SPECIALISTS.find(s => s.id === activeSpecialist) || SPECIALISTS[0];
+    const messages = chats[activeSpecialist] || [];
+
+    return (
+        <div className="h-[100dvh] w-screen flex flex-col bg-[#020617] text-slate-100 overflow-hidden font-sans selection:bg-cyan-500 selection:text-slate-950 relative" translate="no">
+            
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                <div 
+                    className="absolute inset-0 opacity-[0.03]"
+                    style={{
+                        backgroundImage: `
+                            linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(6, 182, 212, 0.3) 1px, transparent 1px)
+                        `,
+                        backgroundSize: '60px 60px'
+                    }}
+                />
+                <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[120px] animate-[pulse_8s_ease-in-out_infinite]"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] animate-[pulse_8s_ease-in-out_infinite]" style={{ animationDelay: '4s' }}></div>
+            </div>
+
+            <header className="sticky top-0 z-40 bg-[#020617]/85 backdrop-blur-2xl saturate-150 border-b border-white/5 shrink-0">
+                <div className="mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
+                    <div className="cursor-pointer" onClick={() => setActiveTab('home')}>
+                        <Logo />
+                    </div>
+
+                    {/* --- NAVEGACIÓN RESTAURADA (Director QA) --- */}
+                    <nav className="hidden xl:flex items-center gap-1.5 bg-slate-900/40 p-1.5 rounded-2xl border border-white/5 backdrop-blur-2xl">
+                        <button onClick={() => setActiveTab('home')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'home' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
+                            <Icon name="Zap" className="w-4 h-4" /> Inicio
+                        </button>
+                        <button onClick={() => setActiveTab('chat')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'chat' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
+                            <Icon name="MessageSquare" className="w-4 h-4" /> Chat Neural
+                        </button>
+                        <button onClick={() => setActiveTab('editor')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'editor' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
+                            <Icon name="Code2" className="w-4 h-4" /> Forja & PWA
+                        </button>
+                        <button onClick={() => alert("Asistente Prompts en desarrollo (Oleada 2)")} className="px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-800/50">
+                            <Icon name="Sparkles" className="w-4 h-4" /> Prompts
+                        </button>
+                        <button onClick={() => alert("Kanban interactivo en desarrollo (Oleada 2)")} className="px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-800/50">
+                            <Icon name="Kanban" className="w-4 h-4" /> Kanban
+                        </button>
+                    </nav>
+
+                    <div className="flex items-center gap-3">
+                        <div className="hidden md:flex items-center gap-2 bg-slate-900/60 border border-violet-500/20 rounded-full px-3.5 py-1.5 backdrop-blur-xl">
+                            <div className="relative">
+                                <div className="w-2 h-2 rounded-full bg-violet-400" />
+                                <div className="absolute inset-0 w-2 h-2 rounded-full bg-violet-400 animate-ping" />
+                            </div>
+                            <span className="text-xs text-violet-300 font-medium">Supabase Cloud</span>
+                        </div>
+
+                        <button onClick={() => setShowKeyModal(true)} className="bg-slate-900/40 hover:bg-slate-800/60 border border-white/5 text-xs px-3.5 py-2.5 rounded-xl font-bold text-slate-100 hover:text-white transition-all flex items-center gap-2 backdrop-blur-xl shadow-lg">
+                            <Icon name="Key" className="w-4 h-4 text-cyan-400" /> Clave API
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div className="flex-1 flex overflow-hidden relative w-full pb-16 xl:pb-0 z-10">
+                {activeTab === 'home' && (
+                    <div className="flex-1 overflow-y-auto scroll-smooth bg-transparent w-full animate-fade-in p-6">
+                        <section className="max-w-5xl mx-auto pt-12 pb-8 text-center space-y-6">
+                            <div className="flex justify-center mb-4">
+                                <Logo withTagline />
+                            </div>
+                            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mt-4">
+                                Crea apps conectando <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">mentes y código</span>
+                            </h1>
+                            <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                                Tu estudio neural con Supabase integrado. Diseña, chatea con especialistas autónomos y genera aplicaciones PWA listas para producción en segundos.
+                            </p>
+                            <div className="flex flex-wrap justify-center gap-4 pt-4">
+                                <button onClick={() => setActiveTab('chat')} className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:opacity-90 text-white font-bold px-8 py-4 rounded-2xl shadow-[0_0_30px_rgba(217,70,239,0.5)] transition-all flex items-center gap-2">
+                                    <Icon name="MessageSquare" className="w-5 h-5" /> Entrar al Chat Neural
+                                </button>
+                                <button onClick={() => setActiveTab('editor')} className="bg-slate-900/60 hover:bg-slate-800/80 text-slate-200 border border-white/10 px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-2 backdrop-blur-2xl shadow-xl">
+                                    <Icon name="Code2" className="w-5 h-5 text-violet-400" /> Abrir Forja PWA
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+                )}
+
+                {activeTab === 'chat' && (
+                    <div className="flex-1 flex overflow-hidden w-full animate-fade-in">
+                        <aside className={`${sidebarOpen ? 'block absolute z-30 h-full' : 'hidden'} xl:block w-72 bg-[#020617]/90 backdrop-blur-2xl border-r border-white/5 flex flex-col shrink-0 overflow-y-auto`}>
+                            <div className="p-4 border-b border-white/5 bg-slate-900/40 flex items-center justify-between sticky top-0 z-10 backdrop-blur-2xl">
+                                <span className="text-xs font-bold text-violet-400 uppercase tracking-wider">Especialistas Neurales</span>
+                                {sidebarOpen && <button onClick={() => setSidebarOpen(false)} className="text-xs text-slate-400 hover:text-white"><Icon name="X" className="w-4 h-4" /></button>}
+                            </div>
+                            <div className="p-3 space-y-2">
+                                {SPECIALISTS.map(spec => {
+                                    const hasChat = chats[spec.id] && chats[spec.id].length > 0;
+                                    return (
+                                        <button 
+                                            key={spec.id} 
+                                            onClick={() => { setActiveSpecialist(spec.id); setSidebarOpen(false); }}
+                                            className={`w-full text-left p-3 rounded-2xl transition-all flex items-center gap-3 relative bg-slate-900/40 backdrop-blur-2xl border ${activeSpecialist === spec.id ? 'border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.2)]' : 'border-white/5 hover:border-white/10'}`}
+                                        >
+                                            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0">
+                                                <Icon name={spec.icon} className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className={`text-sm font-bold truncate ${activeSpecialist === spec.id ? 'text-white' : 'text-slate-300'}`}>{spec.name}</p>
+                                                <p className="text-[10px] text-slate-400 truncate">{spec.bio}</p>
+                                            </div>
+                                            {hasChat && (
+                                                <span className="w-2 h-2 rounded-full bg-violet-400 absolute top-3 right-3 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></span>
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </aside>
+
+                        <main className="flex-1 flex flex-col bg-transparent overflow-hidden relative">
+                            <div className="bg-slate-900/40 backdrop-blur-2xl border-b border-white/5 p-4 md:p-5 text-white flex items-center justify-between shadow-lg shrink-0 relative overflow-hidden">
+                                <div className="flex items-center gap-3 relative z-10">
+                                    <button onClick={() => setSidebarOpen(!sidebarOpen)} className="xl:hidden text-white p-1 bg-white/5 rounded-lg"><Icon name="Layout" className="w-5 h-5" /></button>
+                                    <div className="w-10 h-10 rounded-2xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0 backdrop-blur-md">
+                                        <Icon name={currentSpec.icon} className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h2 className="font-bold text-base md:text-lg text-white">{currentSpec.name}</h2>
+                                        <p className="text-xs text-slate-300 font-medium truncate max-w-[200px] md:max-w-md">{currentSpec.bio} • NeuraLink Cloud Active</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scroll-smooth bg-transparent">
+                                
+                                {/* --- EMPTY STATE SEGURO + ONBOARDING (Seguridad + Marketing) --- */}
+                                {messages.length === 0 && (
+                                    <div className="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto text-slate-300 p-4">
+                                        <div className="w-16 h-16 rounded-2xl bg-[#1E293B] ring-1 ring-white/10 flex items-center justify-center text-violet-400 mb-6 mx-auto shadow-lg">
+                                            <Icon name={currentSpec.icon} className="w-8 h-8" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-white mb-2">Conectando con {currentSpec.name}</h3>
+                                        <p className="text-sm text-slate-400 mb-8 max-w-md mx-auto leading-relaxed">
+                                            El especialista está listo. Selecciona una acción sugerida para comenzar o describe tu visión en el cuadro de abajo.
+                                        </p>
+                                        
+                                        <div className="flex flex-wrap justify-center gap-3 w-full">
+                                            <button onClick={() => setInputMsg(`Por favor, genera una estructura inicial de PWA enfocada en ${currentSpec.bio.toLowerCase()}.`)} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 hover:border-violet-500/30 text-xs text-slate-300 px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                                                <Icon name="Rocket" className="w-3 h-3 text-cyan-400" /> Crear estructura inicial
+                                            </button>
+                                            <button onClick={() => setInputMsg(`¿Cuáles son las mejores prácticas y tendencias actuales para tu área de especialidad?`)} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 hover:border-violet-500/30 text-xs text-slate-300 px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                                                <Icon name="TrendingUp" className="w-3 h-3 text-violet-400" /> Tendencias y consejos
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {messages.map((m, idx) => (
+                                    <div key={idx} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
+                                        <div className={`max-w-3xl rounded-3xl p-4 md:p-5 transition-all duration-300 bg-slate-900/40 backdrop-blur-2xl border ${
+                                            m.role === 'user' 
+                                                ? 'border-violet-500/40 text-white shadow-[0_0_20px_rgba(139,92,246,0.15)] rounded-br-sm' 
+                                                : 'border-white/5 text-slate-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-bl-sm'
+                                        }`}>
+                                            {m.images && m.images.length > 0 && (
+                                                <div className="flex gap-2 mb-3 flex-wrap">
+                                                    {m.images.map((img, i) => (
+                                                        <img key={i} src={img.preview} alt="Adjunta" className="w-32 h-32 object-cover rounded-xl border border-white/10 shadow" />
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {m.role === 'model' ? (
+                                                <div className="markdown-content text-sm leading-relaxed relative z-10" dangerouslySetInnerHTML={{ __html: renderFormattedText(m.text) }} />
+                                            ) : (
+                                                <p className="text-sm whitespace-pre-wrap leading-relaxed text-white">{m.text}</p>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-2 mt-2 px-2">
+                                            <span className="text-[10px] font-medium text-slate-400">{m.time}</span>
+                                            {m.role === 'model' && (
+                                                <>
+                                                    <button onClick={() => safeSpeak(m.text.replace(/```[\s\S]*?```/g, 'bloque de código').replace(/[*#`]/g, ''))} className="text-[10px] bg-slate-900/60 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md border border-white/5 transition flex items-center gap-1" title="Escuchar respuesta">
+                                                        <Icon name="Volume2" className="w-3 h-3" /> Leer
+                                                    </button>
+                                                    {/```(?:html|xml)?\n([\s\S]*?)```/.test(m.text) && (
+                                                        <button onClick={() => extractAndApplyCode(m.text)} className="text-[10px] bg-slate-900/60 hover:bg-slate-800 text-violet-400 px-2.5 py-1 rounded-md border border-violet-500/30 transition flex items-center gap-1 shadow-inner">
+                                                            <Icon name="Rocket" className="w-3 h-3" /> Aplicar Código
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {loading && (
+                                    <div className="flex items-center gap-4 bg-slate-900/40 border border-white/5 p-4 rounded-3xl w-fit backdrop-blur-2xl animate-pulse shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+                                        <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400">
+                                            <Icon name={currentSpec.icon} className="w-5 h-5" />
+                                        </div>
+                                        <p className="text-sm text-violet-400 font-medium">Sintetizando y guardando en Supabase...</p>
+                                    </div>
+                                )}
+
+                                {errorMsg && (
+                                    <div className="bg-red-950/40 border border-red-500/30 p-4 rounded-2xl text-sm text-red-300 backdrop-blur-xl">
+                                        {errorMsg}
+                                    </div>
+                                )}
+
+                                <div ref={chatBottomRef} className="h-2" />
+                            </div>
+
+                            <div className="p-3 md:p-4 bg-slate-900/40 border-t border-white/5 shrink-0 backdrop-blur-2xl">
+                                <div className="flex gap-2 max-w-5xl mx-auto items-center">
+                                    <input type="file" ref={fileInputRef} accept="image/*" multiple onChange={handleImageSelect} className="hidden" />
+                                    <button onClick={() => fileInputRef.current?.click()} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 text-slate-300 p-3 md:p-3.5 rounded-2xl text-sm transition-all flex items-center justify-center" title="Adjuntar imagen">
+                                        <Icon name="Camera" className="w-4 h-4 text-slate-300" />
+                                    </button>
+                                    
+                                    {/* --- RESTAURADO: BOTÓN DE GENERAR VISUAL (QA) --- */}
+                                    <button onClick={() => setInputMsg(prev => prev + "[Generar concepto visual IA para: ] ")} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 text-slate-300 p-3 md:p-3.5 rounded-2xl text-sm transition-all flex items-center justify-center" title="Generar Prompt Visual">
+                                        <Icon name="Palette" className="w-4 h-4 text-violet-400" />
+                                    </button>
+
+                                    <button 
+                                        onClick={toggleVoiceRecognition} 
+                                        className={`p-3 md:p-3.5 rounded-2xl text-sm border transition-all flex items-center justify-center ${isListening ? 'bg-red-600 text-white border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)] animate-pulse' : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300 border-white/5'}`} 
+                                    >
+                                        <Icon name="Mic" className="w-4 h-4" />
+                                    </button>
+                                    <input 
+                                        type="text" 
+                                        value={inputMsg} 
+                                        onChange={e => setInputMsg(e.target.value)} 
+                                        onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+                                        placeholder={isListening ? 'Escuchando voz neural...' : `Escribe a ${currentSpec.name}...`} 
+                                        className="flex-1 bg-slate-950/60 border border-white/5 rounded-2xl px-4 md:px-5 py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-violet-400 transition-all shadow-inner"
+                                    />
+                                    <button 
+                                        onClick={handleSendMessage} 
+                                        disabled={loading || (!inputMsg.trim() && images.length === 0)}
+                                        className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 disabled:opacity-50 disabled:from-slate-700 disabled:to-slate-800 disabled:text-slate-400 text-white px-5 md:px-6 py-3.5 rounded-2xl text-sm font-bold shadow-[0_0_20px_rgba(139,92,246,0.4)] disabled:shadow-none transition-all flex items-center gap-2 shrink-0"
+                                    >
+                                        <span className="hidden sm:inline">Enviar</span> <Icon name="Send" className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                )}
+
+                {activeTab === 'editor' && (
+                    <div className="flex-1 flex flex-col bg-[#020617] overflow-hidden w-full animate-fade-in">
+                        <div className="bg-slate-900/40 backdrop-blur-2xl border-b border-white/5 p-3 md:p-4 flex items-center justify-between shrink-0 flex-wrap gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-slate-900 p-2 rounded-xl text-violet-400 border border-white/5"><Icon name="Monitor" className="w-5 h-5" /></div>
+                                <div>
+                                    <h2 className="font-bold text-sm text-white">Editor PWA de NeuraLink Studio</h2>
+                                    <p className="text-[10px] text-violet-400">Actualización en tiempo real con Supabase</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 grid grid-cols-1 xl:grid-cols-2 overflow-hidden">
+                            <div className="flex flex-col border-r border-white/5 bg-[#020617] relative">
+                                <textarea
+                                    value={sandboxCode}
+                                    onChange={e => setSandboxCode(e.target.value)}
+                                    className="flex-1 bg-[#020617] text-violet-300 font-mono text-xs p-4 pt-12 resize-none focus:outline-none leading-relaxed selection:bg-violet-950 selection:text-violet-100"
+                                    spellCheck={false}
+                                />
+                            </div>
+
+                            <div className="flex flex-col bg-slate-900 relative">
+                                <iframe
+                                    srcDoc={previewCode}
+                                    title="Vista Previa NeuraLink"
+                                    className="w-full h-full border-none"
+                                    sandbox="allow-scripts"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {showKeyModal && (
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+                    <div className="bg-slate-900 border border-white/5 rounded-3xl p-6 md:p-8 max-w-md w-full backdrop-blur-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] space-y-5">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2"><Icon name="Key" className="w-5 h-5 text-violet-400" /> Configurar Clave API</h3>
+                            <button onClick={() => setShowKeyModal(false)} className="text-slate-400 hover:text-white bg-slate-800 p-1.5 rounded-xl"><Icon name="X" className="w-4 h-4" /></button>
+                        </div>
+                        <input 
+                            type="password"
+                            value={apiKey}
+                            onChange={e => setApiKey(e.target.value)}
+                            placeholder="Pega tu Clave API aquí"
+                            className="w-full bg-slate-950 border border-white/5 rounded-2xl px-4 py-3 text-sm text-violet-300 focus:outline-none focus:border-violet-400 font-mono shadow-inner"
+                        />
+                        <button onClick={() => setShowKeyModal(false)} className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white py-3 rounded-2xl text-sm font-bold shadow-[0_0_20px_rgba(139,92,246,0.4)] transition">Guardar Clave</button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 }
