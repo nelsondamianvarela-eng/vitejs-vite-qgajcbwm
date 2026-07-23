@@ -3,19 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 const SUPABASE_URL = 'https://pkpyfpibdfpbxcabpyldj.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_uGFqmmyDqzAiEoUrnKZQbQ_6mwq8OB0';
 
-// --- CLIENTE SUPABASE MEJORADO (Soporta Lectura y Escritura Real) ---
 export const supabase = {
     from: (table) => ({
-        select: async (columns = '*') => {
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=${columns}`, {
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-                });
-                if (!res.ok) throw new Error('Error al leer');
-                return { data: await res.json(), error: null };
-            } catch (err) { return { data: null, error: err }; }
-        },
-        upsert: async (data) => {
+        insert: async (data) => {
             try {
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
                     method: 'POST',
@@ -23,75 +13,73 @@ export const supabase = {
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${SUPABASE_KEY}`,
                         'Content-Type': 'application/json',
-                        'Prefer': 'resolution=merge-duplicates' // Clave para actualizar si existe
+                        'Prefer': 'return=minimal'
                     },
                     body: JSON.stringify(data)
                 });
-                if (!res.ok) throw new Error('Error al guardar');
+                if (!res.ok) throw new Error(`Supabase error: ${res.statusText}`);
                 return { error: null };
-            } catch (err) { return { error: err }; }
-        },
-        insert: async (data) => {
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
-                    method: 'POST',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                    body: JSON.stringify(data)
-                });
-                return { error: res.ok ? null : new Error('Error insert') };
-            } catch (err) { return { error: err }; }
+            } catch (err) {
+                console.warn('Supabase insert warning:', err);
+                return { error: err };
+            }
         }
     })
 };
 
+// --- LOGO INTEGRADO ---
 export function LogoMark({ variant = "synapse", className = "w-10 h-10" }) {
-  const gid = `nl-${variant}`;
-  return (
-    <div className={`${className} rounded-2xl bg-[#1E293B] ring-1 ring-white/10 p-1.5 flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] shrink-0`}>
-      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" aria-label="NeuraLink Studio">
-        <defs>
-          <linearGradient id={gid} x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="#8B5CF6" />
-            <stop offset="1" stopColor="#06B6D4" />
-          </linearGradient>
-        </defs>
-        {variant === "synapse" && (
-          <>
-            <line x1="24" y1="24" x2="24" y2="9" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
-            <line x1="24" y1="24" x2="11" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
-            <line x1="24" y1="24" x2="37" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
-            <line x1="24" y1="24" x2="38" y2="14" stroke={`url(#${gid})`} strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
-            <circle cx="24" cy="9" r="3" fill={`url(#${gid})`} />
-            <circle cx="11" cy="32" r="3" fill={`url(#${gid})`} />
-            <circle cx="37" cy="32" r="3" fill={`url(#${gid})`} />
-            <circle cx="38" cy="14" r="2" fill={`url(#${gid})`} />
-            <circle cx="24" cy="24" r="4.5" fill={`url(#${gid})`} />
-          </>
-        )}
-      </svg>
-    </div>
-  );
+    const gid = `nl-${variant}`;
+    return (
+        <div className={`${className} rounded-2xl bg-[#1E293B] ring-1 ring-white/10 p-1.5 flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] shrink-0`}>
+            <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" aria-label="NeuraLink Studio">
+                <defs>
+                    <linearGradient id={gid} x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stopColor="#8B5CF6" />
+                        <stop offset="1" stopColor="#06B6D4" />
+                    </linearGradient>
+                </defs>
+                {variant === "synapse" && (
+                    <>
+                        <line x1="24" y1="24" x2="24" y2="9" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+                        <line x1="24" y1="24" x2="11" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+                        <line x1="24" y1="24" x2="37" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+                        <line x1="24" y1="24" x2="38" y2="14" stroke={`url(#${gid})`} strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
+                        <circle cx="24" cy="9" r="3" fill={`url(#${gid})`} />
+                        <circle cx="11" cy="32" r="3" fill={`url(#${gid})`} />
+                        <circle cx="37" cy="32" r="3" fill={`url(#${gid})`} />
+                        <circle cx="38" cy="14" r="2" fill={`url(#${gid})`} />
+                        <circle cx="24" cy="24" r="4.5" fill={`url(#${gid})`} />
+                    </>
+                )}
+            </svg>
+        </div>
+    );
 }
 
 export function Logo({ withTagline = false }) {
-  return (
-    <div className="flex items-center gap-3 select-none">
-      <LogoMark variant="synapse" className="w-10 h-10" />
-      <div className="leading-tight">
-        <div className="flex items-baseline gap-1.5">
-          <span className="font-extrabold text-base lg:text-lg tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">NeuraLink</span>
-          <span className="font-mono text-[11px] lg:text-xs text-slate-400 border border-white/10 rounded-md px-1.5 py-0.5">Studio</span>
+    return (
+        <div className="flex items-center gap-3 select-none">
+            <LogoMark variant="synapse" className="w-10 h-10" />
+            <div className="leading-tight">
+                <div className="flex items-baseline gap-1.5">
+                    <span className="font-extrabold text-base lg:text-lg tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+                        NeuraLink
+                    </span>
+                    <span className="font-mono text-[11px] lg:text-xs text-slate-400 border border-white/10 rounded-md px-1.5 py-0.5">
+                        Studio
+                    </span>
+                </div>
+                {withTagline ? (
+                    <p className="text-[10px] text-cyan-400/80 font-medium mt-0.5 tracking-wide">Conectando mentes, creando apps</p>
+                ) : (
+                    <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> Sincronización neural activa
+                    </p>
+                )}
+            </div>
         </div>
-        {withTagline ? (
-          <p className="text-[10px] text-cyan-400/80 font-medium mt-0.5 tracking-wide">Conectando mentes, creando apps</p>
-        ) : (
-          <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> Sincronización neural activa
-          </p>
-        )}
-      </div>
-    </div>
-  );
+    );
 }
 
 const Icon = ({ name, className = "w-5 h-5" }) => {
@@ -113,84 +101,24 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
         case 'Mic': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="19" y2="23"/><line x1="8" x2="16" y1="23" y2="23"/></svg>;
         case 'Send': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>;
         case 'Volume2': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>;
-        case 'Pause': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>;
-        case 'Play': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>;
-        case 'Square': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>;
         case 'Rocket': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 3 0 3 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-3 0-3"/></svg>;
         case 'Monitor': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>;
         case 'X': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>;
         case 'Layout': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>;
-        case 'Paperclip': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>;
-        case 'Link': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>;
-        case 'ChevronDown': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>;
-        case 'Plus': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
-        case 'FileText': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 1-2 2v16a2 2 0 0 1 2 2h12a2 2 0 0 1 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>;
-        case 'Clipboard': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>;
-        case 'Check': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>;
-        case 'Trash2': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>;
-        case 'ArrowRight': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>;
-        case 'ArrowLeft': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>;
-        case 'RefreshCw': return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>;
         default: return <svg className={className} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>;
     }
 };
 
-// --- SISTEMA DE VOZ AVANZADO (Latino + Play/Pausa) ---
-const useNeuralVoice = () => {
-    const [speakingState, setSpeakingState] = useState({ isSpeaking: false, isPaused: false, text: '' });
-
-    useEffect(() => {
-        // Precargar voces
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.getVoices();
-        }
-    }, []);
-
-    const speak = (text) => {
-        if (!('speechSynthesis' in window)) return;
-        
-        // Si ya está hablando el mismo texto, alternar Pausa/Reanudar
-        if (speakingState.isSpeaking && speakingState.text === text) {
-            if (speakingState.isPaused) {
-                window.speechSynthesis.resume();
-                setSpeakingState({ isSpeaking: true, isPaused: false, text });
-            } else {
-                window.speechSynthesis.pause();
-                setSpeakingState({ isSpeaking: true, isPaused: true, text });
-            }
-            return;
-        }
-
-        // Detener cualquier audio anterior
+const safeSpeak = (text) => {
+    try {
+        if (!('speechSynthesis' in window)) return false;
         window.speechSynthesis.cancel();
-
         const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'es-419'; // Español Latinoamericano por defecto
+        utter.lang = 'es-419'; // Español latino
         utter.rate = 1.05;
-        utter.pitch = 1.0;
-
-        // Intentar buscar una voz latina específica (México, Colombia, US Spanish)
-        const voices = window.speechSynthesis.getVoices();
-        const latamVoice = voices.find(v => v.lang.includes('es-MX') || v.lang.includes('es-CO') || v.lang.includes('es-US') || v.lang.includes('es-419'));
-        if (latamVoice) {
-            utter.voice = latamVoice;
-        }
-
-        utter.onend = () => setSpeakingState({ isSpeaking: false, isPaused: false, text: '' });
-        utter.onerror = () => setSpeakingState({ isSpeaking: false, isPaused: false, text: '' });
-
         window.speechSynthesis.speak(utter);
-        setSpeakingState({ isSpeaking: true, isPaused: false, text });
-    };
-
-    const stop = () => {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            setSpeakingState({ isSpeaking: false, isPaused: false, text: '' });
-        }
-    };
-
-    return { speakingState, speak, stop };
+        return true;
+    } catch(e) { return false; }
 };
 
 const SPECIALISTS = [
@@ -203,53 +131,59 @@ const SPECIALISTS = [
     { id: 'marketing', name: 'Marketing Neuronal', icon: 'TrendingUp', color: 'from-orange-600 to-red-600', bio: 'Estrategia de impacto', system: 'Eres experto en Marketing Digital y propuestas de valor disruptivas. Responde en español.' }
 ];
 
-const ANTI_HALLUCINATION_DIRECTIVE = `
-[DIRECTIVA ESTRICTA NEURALINK 2026]:
-- Stack obligatorio: React 18 + Vite + Tailwind CSS + Supabase
-- Prohibido inventar endpoints de Supabase que no existan
-- Prohibido sugerir librerías externas sin justificación
-- Si no sabes algo, di "No tengo certeza" en lugar de inventar
-- Todo código debe ser funcional y copiable directamente
-- Mantener estética Bento + Aurora (slate-950, glassmorphism, violeta/cian)
-`;
-
+// --- CORREGIDO: Modelo Gemini estable ---
 const callGeminiAPI = async (specialist, messages, images = [], currentCode = '', apiKey = '') => {
     const key = apiKey || localStorage.getItem('neuralink_gemini_key') || '';
-    if (!key) throw new Error('Por favor ingresa tu clave API de Google AI Studio.');
+    if (!key) {
+        throw new Error('Por favor ingresa tu clave API de Google AI Studio haciendo clic en "Clave API" arriba.');
+    }
     
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${key}`;
+    // CORRECCIÓN PRINCIPAL: Usar gemini-1.5-flash (modelo estable)
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+    
     const contents = [];
-    
     messages.forEach((m, idx) => {
         const parts = [];
         if (m.images && m.images.length > 0 && idx === messages.length - 1) {
-            m.images.forEach(img => parts.push({ inline_data: { mime_type: img.mime, data: img.data } }));
+            m.images.forEach(img => {
+                parts.push({ inline_data: { mime_type: img.mime, data: img.data } });
+            });
         }
         parts.push({ text: m.text });
         contents.push({ role: m.role === 'user' ? 'user' : 'model', parts });
     });
 
     if (currentCode) {
-        contents.push({ role: 'user', parts: [{ text: `[Contexto actual del código en NeuraLink Studio]\n\`\`\`html\n${currentCode}\n\`\`\`` }] });
+        contents.push({
+            role: 'user',
+            parts: [{ text: `[Contexto actual del código en NeuraLink Studio]\n\`\`\`html\n${currentCode}\n\`\`\`` }]
+        });
     }
 
     const payload = {
         contents,
-        systemInstruction: { parts: [{ text: `${specialist.system}\n\n${ANTI_HALLUCINATION_DIRECTIVE}` }] },
+        systemInstruction: { parts: [{ text: specialist.system }] },
         generationConfig: { temperature: 0.4, maxOutputTokens: 8192 }
     };
 
     let response;
-    for (let i = 0; i < 3; i++) {
+    let delay = 1000;
+    for (let i = 0; i < 4; i++) {
         try {
-            response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
             if (response.ok) break;
-        } catch (e) { await new Promise(res => setTimeout(res, 1000 * (i + 1))); }
+        } catch (e) {}
+        await new Promise(res => setTimeout(res, delay));
+        delay *= 2;
     }
 
     if (!response || !response.ok) {
         const errData = await response?.json().catch(() => ({}));
-        throw new Error(errData.error?.message || `Error HTTP ${response?.status || 500}`);
+        throw new Error(errData.error?.message || `Error HTTP ${response?.status || 500}. Verifica tu clave API o espera unos segundos.`);
     }
 
     const data = await response.json();
@@ -265,14 +199,17 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
 
 const renderFormattedText = (text) => {
     if (!text) return '';
-    let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    let safeText = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
     let formatted = safeText
-        .replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-            return `<div class="relative group my-4"><button class="copy-code-btn absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-all z-10 flex items-center gap-1.5 shadow-lg"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg><span>Copiar</span></button><pre class="bg-slate-950/90 p-4 pt-12 rounded-2xl overflow-x-auto border border-cyan-500/20 text-xs font-mono text-cyan-300 shadow-inner"><code>${code}</code></pre></div>`;
-        })
+        .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-slate-950/90 p-3 rounded-2xl my-2 overflow-x-auto border border-cyan-500/20 text-xs font-mono text-cyan-300"><code>$2</code></pre>')
         .replace(/`([^`]+)`/g, '<code class="bg-slate-900 text-cyan-400 px-1.5 py-0.5 rounded text-xs font-mono border border-cyan-500/10">$1</code>')
         .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
-        .replace(/\n\n/g, '</p><p class="mt-2">').replace(/\n/g, '<br/>');
+        .replace(/\n\n/g, '</p><p class="mt-2">')
+        .replace(/\n/g, '<br/>');
     return `<p>${formatted}</p>`;
 };
 
@@ -281,130 +218,82 @@ export default function App() {
     const [showKeyModal, setShowKeyModal] = useState(false);
     const [activeTab, setActiveTab] = useState('home');
     const [activeSpecialist, setActiveSpecialist] = useState('director');
-    
-    const [toastMessage, setToastMessage] = useState('');
-    const showToast = (msg) => { setToastMessage(msg); setTimeout(() => setToastMessage(''), 3000); };
-
-    // --- SINCRONIZACIÓN NEURAL (PC <-> App) ---
-    const [syncToken, setSyncToken] = useState(() => localStorage.getItem('neuralink_sync_token') || `NL-${Math.random().toString(36).substr(2, 6).toUpperCase()}`);
-    const [isSyncing, setIsSyncing] = useState(false);
-
-    const [projects, setProjects] = useState([{ id: 'p_demo', name: 'Proyecto Demo', client: 'Interno', color: 'bg-violet-500', createdAt: Date.now() }]);
-    const [activeProjectId, setActiveProjectId] = useState('p_demo');
-    const [showProjectDropdown, setShowProjectDropdown] = useState(false);
-    const [showNewProjectModal, setShowNewProjectModal] = useState(false);
-    const [newProjectName, setNewProjectName] = useState('');
-
-    const [chats, setChats] = useState({ 'p_demo': {} });
-    const [tasks, setTasks] = useState([]);
-    const [sandboxCode, setSandboxCode] = useState(`<!DOCTYPE html>\n<html lang="es">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>NeuraLink Studio</title>\n<script src="https://cdn.tailwindcss.com"><\/script>\n</head>\n<body class="bg-[#020617] text-white min-h-[100dvh] flex items-center justify-center p-6">\n<h1 class="text-3xl font-bold bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">NeuraLink Studio</h1>\n</body>\n</html>`);
-    
+    const [syncToken, setSyncToken] = useState(() => localStorage.getItem('neuralink_sync_token') || 'NL-67P5');
+    const [chats, setChats] = useState(() => {
+        try {
+            const saved = localStorage.getItem('neuralink_neural_chats');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (typeof parsed === 'object' && parsed !== null) return parsed;
+            }
+        } catch(e) {}
+        return {};
+    });
+    const [sandboxCode, setSandboxCode] = useState(() => {
+        return localStorage.getItem('neuralink_neural_code') || `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuraLink Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#020617] text-white min-h-[100dvh] flex flex-col items-center justify-center p-6 font-sans">
+    <div class="text-center space-y-4">
+        <h1 class="text-3xl font-extrabold text-white">NeuraLink Studio</h1>
+        <p class="text-slate-300 text-sm">Conectando mentes, creando apps.</p>
+    </div>
+</body>
+</html>`;
+    });
     const [previewCode, setPreviewCode] = useState(sandboxCode);
     const [inputMsg, setInputMsg] = useState('');
     const [images, setImages] = useState([]);
-    const [attachments, setAttachments] = useState([]); 
-    const [showUrlModal, setShowUrlModal] = useState(false);
-    const [urlInput, setUrlInput] = useState('');
-    const [urlAnalyzing, setUrlAnalyzing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isListening, setIsListening] = useState(false);
 
-    // Hook de voz personalizado
-    const { speakingState, speak, stop: stopSpeaking } = useNeuralVoice();
-
-    const chatBottomRef = useRef(null);
-    const imageInputRef = useRef(null);
-    const docInputRef = useRef(null);
-
-    // --- CARGA INICIAL DESDE LA NUBE ---
     useEffect(() => {
-        const loadFromCloud = async () => {
-            setIsSyncing(true);
-            try {
-                const { data, error } = await supabase.from('neuralink_sync').select('*').eq('token', syncToken).single();
-                if (data && !error) {
-                    if (data.projects) setProjects(JSON.parse(data.projects));
-                    if (data.chats) setChats(JSON.parse(data.chats));
-                    if (data.tasks) setTasks(JSON.parse(data.tasks));
-                    if (data.code) setSandboxCode(data.code);
-                    showToast("Sincronización desde la nube exitosa");
-                }
-            } catch (e) {
-                console.log("Primera vez o sin datos en nube, usando local.");
-            }
-            setIsSyncing(false);
-        };
-        loadFromCloud();
-    }, []); // Solo al montar
-
-    // --- GUARDADO AUTOMÁTICO EN LA NUBE (Debounce) ---
+        try { localStorage.setItem('neuralink_neural_chats', JSON.stringify(chats)); } catch(e) {}
+    }, [chats]);
     useEffect(() => {
-        localStorage.setItem('neuralink_sync_token', syncToken);
-        const timer = setTimeout(async () => {
-            setIsSyncing(true);
-            await supabase.from('neuralink_sync').upsert({
-                token: syncToken,
-                projects: JSON.stringify(projects),
-                chats: JSON.stringify(chats),
-                tasks: JSON.stringify(tasks),
-                code: sandboxCode,
-                updated_at: new Date().toISOString()
-            });
-            setIsSyncing(false);
-        }, 2000); // Guarda 2 segundos después del último cambio
-        return () => clearTimeout(timer);
-    }, [projects, chats, tasks, sandboxCode, syncToken]);
+        try { localStorage.setItem('neuralink_neural_code', sandboxCode); } catch(e) {}
+    }, [sandboxCode]);
+    useEffect(() => {
+        try { localStorage.setItem('neuralink_gemini_key', apiKey); } catch(e) {}
+    }, [apiKey]);
+    useEffect(() => {
+        try { localStorage.setItem('neuralink_sync_token', syncToken); } catch(e) {}
+    }, [syncToken]);
 
     useEffect(() => {
         const timer = setTimeout(() => { setPreviewCode(sandboxCode); }, 500);
         return () => clearTimeout(timer);
     }, [sandboxCode]);
 
-    useEffect(() => {
-        if (activeTab === 'chat') { chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }
-    }, [chats, activeSpecialist, loading, activeTab, activeProjectId]);
+    const chatBottomRef = useRef(null);
+    const fileInputRef = useRef(null);
 
-    // Manejo de copiado de código
     useEffect(() => {
-        const handleCopy = (e) => {
-            const btn = e.target.closest('.copy-code-btn');
-            if (btn) {
-                const codeNode = btn.parentElement.querySelector('code');
-                if (codeNode) {
-                    const rawCode = codeNode.innerText.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-                    navigator.clipboard.writeText(rawCode).then(() => showToast("Código copiado al portapapeles"));
-                }
-            }
-        };
-        document.addEventListener('click', handleCopy);
-        return () => document.removeEventListener('click', handleCopy);
-    }, []);
-
-    const createNewProject = () => {
-        if (!newProjectName.trim()) return;
-        const newId = `p_${Date.now()}`;
-        const newProj = { id: newId, name: newProjectName, client: 'Nuevo Cliente', color: 'bg-violet-500', createdAt: Date.now() };
-        setProjects([...projects, newProj]);
-        setActiveProjectId(newId);
-        setChats(prev => ({ ...prev, [newId]: {} }));
-        setNewProjectName('');
-        setShowNewProjectModal(false);
-        showToast(`Proyecto "${newProj.name}" creado y sincronizado`);
-    };
+        if (activeTab === 'chat') {
+            chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [chats, activeSpecialist, loading, activeTab]);
 
     const toggleVoiceRecognition = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) { showToast("Navegador no soporta reconocimiento de voz"); return; }
+        if (!SpeechRecognition) return;
         if (isListening) { setIsListening(false); return; }
         try {
             const recognition = new SpeechRecognition();
-            recognition.lang = 'es-419'; // También forzar latino en el input de voz
+            recognition.lang = 'es-419';
             recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
             recognition.onstart = () => setIsListening(true);
             recognition.onresult = (event) => {
-                setInputMsg(prev => prev ? `${prev} ${event.results[0][0].transcript}` : event.results[0][0].transcript);
+                const speechText = event.results[0][0].transcript;
+                setInputMsg(prev => prev ? `${prev} ${speechText}` : speechText);
                 setIsListening(false);
             };
             recognition.onerror = () => setIsListening(false);
@@ -420,72 +309,37 @@ export default function App() {
         e.target.value = '';
     };
 
-    const handleDocumentSelect = async (e) => {
-        const files = Array.from(e.target.files);
-        const newAttachments = [];
-        for (const file of files) {
-            try {
-                const text = await file.text();
-                newAttachments.push({ name: file.name, type: file.type || 'text/plain', content: text });
-            } catch (err) { console.error("Error leyendo archivo", err); }
-        }
-        setAttachments(prev => [...prev, ...newAttachments]);
-        e.target.value = '';
-    };
-
-    const analyzeUrl = () => {
-        if (!urlInput.trim()) return;
-        setUrlAnalyzing(true);
-        setTimeout(() => {
-            const analysis = `[Análisis Estructural de URL: ${urlInput}]\n- Tipo detectado: Landing Page o Web App Moderna.\n- Tecnologías probables: React, Tailwind CSS, Vercel/Supabase.\n- Oportunidades UX: Necesita mejor jerarquía visual y optimización de PWA.`;
-            setInputMsg(prev => prev ? `${prev}\n\n${analysis}` : analysis);
-            setUrlAnalyzing(false);
-            setShowUrlModal(false);
-            setUrlInput('');
-            showToast("Análisis de URL inyectado al mensaje");
-        }, 1500);
-    };
-
     const handleSendMessage = async () => {
-        if (!inputMsg.trim() && images.length === 0 && attachments.length === 0) return;
+        if (!inputMsg.trim() && images.length === 0) return;
         if (!apiKey.trim()) { setShowKeyModal(true); return; }
 
         const spec = SPECIALISTS.find(s => s.id === activeSpecialist);
-        let finalPromptText = inputMsg || '(Mensaje con adjuntos)';
-        if (attachments.length > 0) {
-            finalPromptText += '\n\n[Archivos adjuntos del usuario]:\n';
-            attachments.forEach(att => { finalPromptText += `\n--- ${att.name} ---\n${att.content}\n`; });
-        }
-
+        const promptText = inputMsg || '(Imagen adjunta)';
         const userMessage = { 
-            role: 'user', text: finalPromptText, displayMsg: inputMsg || '(Archivos enviados)',
+            role: 'user', 
+            text: promptText, 
             images: images.map(i => ({ name: i.name, preview: i.preview })),
-            hasAttachments: attachments.length > 0,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
         };
-        
-        const projectChats = chats[activeProjectId] || {};
-        const currentSpecChat = projectChats[activeSpecialist] || [];
+        const currentSpecChat = chats[activeSpecialist] || [];
         const updatedChat = [...currentSpecChat, userMessage];
-        
-        setChats(prev => ({ ...prev, [activeProjectId]: { ...prev[activeProjectId], [activeSpecialist]: updatedChat } }));
+        setChats(prev => ({ ...prev, [activeSpecialist]: updatedChat }));
         setInputMsg('');
         const currentImages = [...images];
         setImages([]);
-        setAttachments([]);
         setLoading(true);
         setErrorMsg('');
 
         try {
             const replyText = await callGeminiAPI(spec, updatedChat, currentImages, sandboxCode, apiKey);
             const botMessage = { role: 'model', text: replyText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-            
-            setChats(prev => {
-                const currentProj = prev[activeProjectId] || {};
-                return { ...prev, [activeProjectId]: { ...currentProj, [activeSpecialist]: [...updatedChat, botMessage] } };
-            });
-
-            await supabase.from('neuralink_logs').insert([{ token: syncToken, specialist: activeSpecialist, prompt: finalPromptText.substring(0,500), response: replyText.substring(0,500) }]);
+            const finalChat = [...updatedChat, botMessage];
+            setChats(prev => ({ ...prev, [activeSpecialist]: finalChat }));
+            try {
+                await supabase.from('neuralink_logs').insert([
+                    { token: syncToken, specialist: activeSpecialist, prompt: promptText, response: replyText }
+                ]);
+            } catch(dbErr) {}
         } catch (err) {
             setErrorMsg(`Error: ${err.message}`);
         } finally {
@@ -498,16 +352,11 @@ export default function App() {
         if (codeMatch && codeMatch[1]) {
             setSandboxCode(codeMatch[1]);
             setActiveTab('editor');
-            showToast("Código aplicado con éxito en la Forja PWA");
-        } else {
-            showToast("No se detectó un bloque de código ejecutable");
         }
     };
 
-    const currentProject = projects.find(p => p.id === activeProjectId) || projects[0];
     const currentSpec = SPECIALISTS.find(s => s.id === activeSpecialist) || SPECIALISTS[0];
-    const projectChats = chats[activeProjectId] || {};
-    const messages = projectChats[activeSpecialist] || [];
+    const messages = chats[activeSpecialist] || [];
 
     return (
         <div className="h-[100dvh] w-screen flex flex-col bg-[#020617] text-slate-100 overflow-hidden font-sans selection:bg-cyan-500 selection:text-slate-950 relative" translate="no">
@@ -517,63 +366,24 @@ export default function App() {
                 <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] animate-[pulse_8s_ease-in-out_infinite]" style={{ animationDelay: '4s' }}></div>
             </div>
 
-            {toastMessage && (
-                <div className="fixed top-20 right-6 z-50 bg-slate-900 border border-cyan-500/40 text-cyan-300 text-xs px-4 py-3 rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.3)] backdrop-blur-xl flex items-center gap-2 animate-fade-in">
-                    <Icon name="Check" className="w-4 h-4 text-cyan-400" />
-                    <span>{toastMessage}</span>
-                    {isSyncing && <Icon name="RefreshCw" className="w-3 h-3 animate-spin text-slate-400" />}
-                </div>
-            )}
-
             <header className="sticky top-0 z-40 bg-[#020617]/85 backdrop-blur-2xl saturate-150 border-b border-white/5 shrink-0">
                 <div className="mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-6">
-                        <div className="cursor-pointer" onClick={() => setActiveTab('home')}><Logo /></div>
-                        <div className="hidden md:block relative">
-                            <button onClick={() => setShowProjectDropdown(!showProjectDropdown)} className="flex items-center gap-2 bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 rounded-xl px-3 py-1.5 transition-all text-sm font-medium backdrop-blur-xl text-slate-200">
-                                <div className={`w-2 h-2 rounded-full ${currentProject.color}`}></div>
-                                {currentProject.name}
-                                <Icon name="ChevronDown" className="w-4 h-4 text-slate-400" />
-                            </button>
-                            {showProjectDropdown && (
-                                <>
-                                    <div className="fixed inset-0 z-40" onClick={() => setShowProjectDropdown(false)}></div>
-                                    <div className="absolute top-full left-0 mt-2 w-56 bg-slate-900 border border-white/10 rounded-2xl shadow-xl z-50 overflow-hidden backdrop-blur-xl">
-                                        <div className="p-2 border-b border-white/5"><span className="text-[10px] uppercase font-bold text-slate-500 px-2 tracking-wider">Tus Proyectos</span></div>
-                                        <div className="p-1 max-h-64 overflow-y-auto">
-                                            {projects.map(p => (
-                                                <button key={p.id} onClick={() => { setActiveProjectId(p.id); setShowProjectDropdown(false); showToast(`Proyecto activo: ${p.name}`); }} className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-xl transition-all ${activeProjectId === p.id ? 'bg-violet-500/10 text-white font-bold' : 'text-slate-300 hover:bg-white/5 hover:text-white'}`}>
-                                                    <div className={`w-2 h-2 rounded-full ${p.color}`}></div>{p.name}
-                                                </button>
-                                            ))}
-                                        </div>
-                                        <div className="p-2 border-t border-white/5">
-                                            <button onClick={() => { setShowProjectDropdown(false); setShowNewProjectModal(true); }} className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-bold py-2 rounded-xl transition-all">
-                                                <Icon name="Plus" className="w-3 h-3" /> Nuevo Proyecto
-                                            </button>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-
+                    <div className="cursor-pointer" onClick={() => setActiveTab('home')}><Logo /></div>
                     <nav className="hidden xl:flex items-center gap-1.5 bg-slate-900/40 p-1.5 rounded-2xl border border-white/5 backdrop-blur-2xl">
-                        {['home', 'chat', 'editor'].map(tab => (
-                            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === tab ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
-                                <Icon name={tab === 'home' ? 'Zap' : tab === 'chat' ? 'MessageSquare' : 'Code2'} className="w-4 h-4" /> 
-                                {tab === 'home' ? 'Inicio' : tab === 'chat' ? 'Chat Neural' : 'Forja & PWA'}
-                            </button>
-                        ))}
+                        <button onClick={() => setActiveTab('home')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'home' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
+                            <Icon name="Zap" className="w-4 h-4" /> Inicio
+                        </button>
+                        <button onClick={() => setActiveTab('chat')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'chat' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
+                            <Icon name="MessageSquare" className="w-4 h-4" /> Chat Neural
+                        </button>
+                        <button onClick={() => setActiveTab('editor')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'editor' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
+                            <Icon name="Code2" className="w-4 h-4" /> Forja & PWA
+                        </button>
                     </nav>
-
                     <div className="flex items-center gap-3">
                         <div className="hidden md:flex items-center gap-2 bg-slate-900/60 border border-violet-500/20 rounded-full px-3.5 py-1.5 backdrop-blur-xl">
-                            <div className="relative">
-                                <div className="w-2 h-2 rounded-full bg-violet-400" />
-                                <div className="absolute inset-0 w-2 h-2 rounded-full bg-violet-400 animate-ping" />
-                            </div>
-                            <span className="text-xs text-violet-300 font-medium">Sync: {syncToken}</span>
+                            <div className="relative"><div className="w-2 h-2 rounded-full bg-violet-400" /><div className="absolute inset-0 w-2 h-2 rounded-full bg-violet-400 animate-ping" /></div>
+                            <span className="text-xs text-violet-300 font-medium">Supabase Cloud</span>
                         </div>
                         <button onClick={() => setShowKeyModal(true)} className="bg-slate-900/40 hover:bg-slate-800/60 border border-white/5 text-xs px-3.5 py-2.5 rounded-xl font-bold text-slate-100 hover:text-white transition-all flex items-center gap-2 backdrop-blur-xl shadow-lg">
                             <Icon name="Key" className="w-4 h-4 text-cyan-400" /> Clave API
@@ -591,7 +401,7 @@ export default function App() {
                                 Crea apps conectando <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">mentes y código</span>
                             </h1>
                             <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                                Tu estudio neural con sincronización en la nube. Diseña, chatea con especialistas autónomos y genera aplicaciones PWA en segundos.
+                                Tu estudio neural con Supabase integrado. Diseña, chatea con especialistas autónomos y genera aplicaciones PWA.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 pt-4">
                                 <button onClick={() => setActiveTab('chat')} className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:opacity-90 text-white font-bold px-8 py-4 rounded-2xl shadow-[0_0_30px_rgba(217,70,239,0.5)] transition-all flex items-center gap-2">
@@ -614,7 +424,7 @@ export default function App() {
                             </div>
                             <div className="p-3 space-y-2">
                                 {SPECIALISTS.map(spec => {
-                                    const hasChat = projectChats[spec.id] && projectChats[spec.id].length > 0;
+                                    const hasChat = chats[spec.id] && chats[spec.id].length > 0;
                                     return (
                                         <button key={spec.id} onClick={() => { setActiveSpecialist(spec.id); setSidebarOpen(false); }} className={`w-full text-left p-3 rounded-2xl transition-all flex items-center gap-3 relative bg-slate-900/40 backdrop-blur-2xl border ${activeSpecialist === spec.id ? 'border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.2)]' : 'border-white/5 hover:border-white/10'}`}>
                                             <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0">
@@ -632,135 +442,62 @@ export default function App() {
                         </aside>
 
                         <main className="flex-1 flex flex-col bg-transparent overflow-hidden relative">
-                            <div className="bg-slate-900/40 backdrop-blur-2xl border-b border-white/5 p-4 md:p-5 text-white flex items-center justify-between shadow-lg shrink-0 relative overflow-hidden">
-                                <div className="flex items-center gap-3 relative z-10">
+                            <div className="bg-slate-900/40 backdrop-blur-2xl border-b border-white/5 p-4 md:p-5 text-white flex items-center justify-between shadow-lg shrink-0">
+                                <div className="flex items-center gap-3">
                                     <button onClick={() => setSidebarOpen(!sidebarOpen)} className="xl:hidden text-white p-1 bg-white/5 rounded-lg"><Icon name="Layout" className="w-5 h-5" /></button>
                                     <div className="w-10 h-10 rounded-2xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0 backdrop-blur-md">
                                         <Icon name={currentSpec.icon} className="w-6 h-6" />
                                     </div>
                                     <div>
                                         <h2 className="font-bold text-base md:text-lg text-white">{currentSpec.name}</h2>
-                                        <p className="text-xs text-slate-300 font-medium truncate max-w-[200px] md:max-w-md">{currentSpec.bio} • NeuraLink Cloud Active</p>
+                                        <p className="text-xs text-slate-300 font-medium">{currentSpec.bio}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scroll-smooth">
                                 {messages.length === 0 && (
-                                    <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4 opacity-60">
+                                    <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
                                         <Icon name={currentSpec.icon} className="w-16 h-16 text-slate-600" />
-                                        <p className="text-sm">Iniciando enlace neural con {currentSpec.name} para {currentProject.name}...</p>
+                                        <p className="text-sm">Iniciando enlace neural con {currentSpec.name}...</p>
                                     </div>
                                 )}
                                 {messages.map((m, idx) => (
-                                    <div key={idx} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
-                                        <div className={`max-w-[90%] md:max-w-[75%] rounded-3xl p-4 md:p-5 shadow-lg relative ${
-                                            m.role === 'user' ? 'bg-gradient-to-br from-violet-600/90 to-fuchsia-600/90 text-white border border-white/10 rounded-tr-sm' : 'bg-slate-900/80 text-slate-200 border border-white/5 backdrop-blur-xl rounded-tl-sm shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]'
-                                        }`}>
-                                            {m.role === 'model' && (
-                                                <div className="absolute top-4 right-4 flex gap-2">
-                                                    {/* BOTÓN DE VOZ DINÁMICO (PLAY / PAUSA / STOP) */}
-                                                    {speakingState.isSpeaking && speakingState.text === m.text ? (
-                                                        <>
-                                                            <button onClick={() => speak(m.text)} className="text-cyan-400 hover:text-white p-1 bg-cyan-500/10 hover:bg-cyan-500/20 rounded-md transition-colors border border-cyan-500/20" title={speakingState.isPaused ? "Reanudar" : "Pausar"}>
-                                                                <Icon name={speakingState.isPaused ? "Play" : "Pause"} className="w-3.5 h-3.5" />
-                                                            </button>
-                                                            <button onClick={stopSpeaking} className="text-red-400 hover:text-white p-1 bg-red-500/10 hover:bg-red-500/20 rounded-md transition-colors border border-red-500/20" title="Detener">
-                                                                <Icon name="Square" className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <button onClick={() => speak(m.text)} className="text-slate-400 hover:text-cyan-400 p-1 bg-white/5 hover:bg-white/10 rounded-md transition-colors" title="Leer en voz alta (Latino)">
-                                                            <Icon name="Volume2" className="w-3.5 h-3.5" />
-                                                        </button>
-                                                    )}
-                                                    <button onClick={() => extractAndApplyCode(m.text)} className="text-cyan-400 hover:text-white p-1 bg-cyan-500/10 hover:bg-cyan-500/20 rounded-md transition-colors border border-cyan-500/20" title="Aplicar código a la Forja">
-                                                        <Icon name="Rocket" className="w-3.5 h-3.5" />
-                                                    </button>
-                                                </div>
-                                            )}
-
-                                            <div className="text-sm leading-relaxed prose prose-invert prose-p:my-1 prose-pre:my-0 max-w-none" dangerouslySetInnerHTML={{ __html: m.role === 'model' ? renderFormattedText(m.text) : (m.displayMsg || m.text) }} />
-                                            
-                                            {m.hasAttachments && (
-                                                <div className="mt-3 flex flex-wrap gap-2">
-                                                    <span className="text-[10px] bg-white/20 px-2 py-1 rounded border border-white/30 flex items-center gap-1"><Icon name="FileText" className="w-3 h-3"/> Documentos adjuntos</span>
-                                                </div>
-                                            )}
+                                    <div key={idx} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`max-w-[85%] md:max-w-[75%] rounded-3xl p-4 md:p-5 shadow-lg ${m.role === 'user' ? 'bg-gradient-to-br from-violet-600/90 to-fuchsia-600/90 text-white' : 'bg-slate-900/80 text-slate-200 border border-white/5 backdrop-blur-xl'}`}>
                                             {m.images && m.images.length > 0 && (
-                                                <div className="mt-4 flex flex-wrap gap-3">
-                                                    {m.images.map((img, i) => (<img key={i} src={img.preview} alt="Upload" className="w-24 h-24 object-cover rounded-xl border border-white/20 shadow-md" />))}
+                                                <div className="flex gap-2 mb-3 flex-wrap">
+                                                    {m.images.map((img, i) => (<img key={i} src={img.preview} alt="" className="w-24 h-24 object-cover rounded-xl border border-white/20" />))}
                                                 </div>
                                             )}
-                                            <span className={`text-[10px] mt-3 block font-medium ${m.role === 'user' ? 'text-violet-200' : 'text-slate-500'}`}>{m.time}</span>
+                                            <div className="text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: m.role === 'model' ? renderFormattedText(m.text) : m.text.replace(/\n/g, '<br/>') }} />
+                                            <span className="text-[10px] mt-3 block opacity-60">{m.time}</span>
+                                            {m.role === 'model' && (
+                                                <div className="flex gap-2 mt-3 pt-3 border-t border-white/10">
+                                                    <button onClick={() => safeSpeak(m.text)} className="text-xs bg-white/5 hover:bg-white/10 px-2 py-1 rounded flex items-center gap-1"><Icon name="Volume2" className="w-3 h-3" /> Leer</button>
+                                                    {/```/.test(m.text) && (<button onClick={() => extractAndApplyCode(m.text)} className="text-xs bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 px-2 py-1 rounded flex items-center gap-1"><Icon name="Rocket" className="w-3 h-3" /> Aplicar</button>)}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
                                 {loading && (
-                                    <div className="flex justify-start animate-fade-in">
-                                        <div className="bg-slate-900/80 border border-white/5 backdrop-blur-xl rounded-3xl rounded-tl-sm p-5 shadow-lg flex items-center gap-3">
-                                            <div className="flex gap-1.5">
-                                                <span className="w-2.5 h-2.5 bg-violet-500 rounded-full animate-bounce"></span>
-                                                <span className="w-2.5 h-2.5 bg-fuchsia-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></span>
-                                                <span className="w-2.5 h-2.5 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></span>
-                                            </div>
-                                            <span className="text-xs text-slate-400 font-medium">Procesando sinapsis y sincronizando...</span>
-                                        </div>
+                                    <div className="flex items-center gap-3 bg-slate-900/60 border border-white/5 p-4 rounded-2xl w-fit backdrop-blur-xl">
+                                        <div className="flex gap-1"><span className="w-2 h-2 bg-violet-500 rounded-full animate-bounce"></span><span className="w-2 h-2 bg-fuchsia-500 rounded-full animate-bounce" style={{animationDelay:'0.1s'}}></span><span className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{animationDelay:'0.2s'}}></span></div>
+                                        <span className="text-xs text-slate-400">Procesando...</span>
                                     </div>
                                 )}
-                                {errorMsg && <div className="bg-red-950/50 border border-red-500/50 text-red-200 text-xs p-4 rounded-2xl mx-4 mb-4 backdrop-blur-md">{errorMsg}</div>}
+                                {errorMsg && <div className="bg-red-950/50 border border-red-500/50 text-red-200 text-xs p-4 rounded-2xl">{errorMsg}</div>}
                                 <div ref={chatBottomRef} />
                             </div>
 
-                            <div className="p-4 bg-slate-950/60 border-t border-white/5 backdrop-blur-2xl shrink-0">
-                                {(images.length > 0 || attachments.length > 0) && (
-                                    <div className="flex flex-wrap gap-2 mb-3 px-2">
-                                        {images.map((img, i) => (
-                                            <div key={i} className="relative group">
-                                                <img src={img.preview} alt="prev" className="w-12 h-12 object-cover rounded-lg border border-violet-500/30" />
-                                                <button onClick={() => setImages(prev => prev.filter((_, idx) => idx !== i))} className="absolute -top-1.5 -right-1.5 bg-slate-800 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"><Icon name="X" className="w-3 h-3"/></button>
-                                            </div>
-                                        ))}
-                                        {attachments.map((att, i) => (
-                                            <div key={i} className="flex items-center gap-1.5 bg-slate-800 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-300">
-                                                <Icon name="FileText" className="w-3.5 h-3.5 text-cyan-400"/>
-                                                <span className="max-w-[100px] truncate">{att.name}</span>
-                                                <button onClick={() => setAttachments(prev => prev.filter((_, idx) => idx !== i))} className="ml-1 text-slate-400 hover:text-white"><Icon name="X" className="w-3 h-3"/></button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
+                            <div className="p-4 bg-slate-950/60 border-t border-white/5 backdrop-blur-2xl">
                                 <div className="flex gap-2 max-w-4xl mx-auto">
-                                    <div className="flex-1 bg-slate-900/80 border border-white/10 focus-within:border-violet-500/50 rounded-2xl flex items-center px-2 shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] transition-all">
-                                        <button onClick={() => imageInputRef.current?.click()} className="p-2 text-slate-400 hover:text-cyan-400 transition-colors" title="Subir Imagen">
-                                            <Icon name="Camera" className="w-5 h-5" />
-                                        </button>
-                                        <input type="file" multiple accept="image/*" className="hidden" ref={imageInputRef} onChange={handleImageSelect} />
-                                        
-                                        <button onClick={() => docInputRef.current?.click()} className="p-2 text-slate-400 hover:text-violet-400 transition-colors" title="Adjuntar Documentos (.txt, .js, .json, etc)">
-                                            <Icon name="Paperclip" className="w-5 h-5" />
-                                        </button>
-                                        <input type="file" multiple accept=".txt,.js,.jsx,.ts,.tsx,.json,.md,.html,.css" className="hidden" ref={docInputRef} onChange={handleDocumentSelect} />
-
-                                        <button onClick={() => setShowUrlModal(true)} className="p-2 text-slate-400 hover:text-fuchsia-400 transition-colors" title="Analizar URL">
-                                            <Icon name="Link" className="w-5 h-5" />
-                                        </button>
-
-                                        <input 
-                                            type="text" value={inputMsg} onChange={e => setInputMsg(e.target.value)}
-                                            onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-                                            placeholder={`Comunica con ${currentSpec.name}...`}
-                                            className="flex-1 bg-transparent border-none text-white text-sm px-2 focus:outline-none focus:ring-0 placeholder:text-slate-500" disabled={loading}
-                                        />
-                                        <button onClick={toggleVoiceRecognition} className={`p-2 transition-colors ${isListening ? 'text-red-400 animate-pulse' : 'text-slate-400 hover:text-violet-400'}`} title="Dictado Neural">
-                                            <Icon name="Mic" className="w-5 h-5" />
-                                        </button>
-                                    </div>
-                                    
-                                    <button onClick={handleSendMessage} disabled={loading || (!inputMsg.trim() && images.length === 0 && attachments.length === 0)} className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-2xl shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all flex items-center justify-center">
-                                        <Icon name="Send" className="w-5 h-5" />
-                                    </button>
+                                    <input type="file" ref={fileInputRef} accept="image/*" multiple onChange={handleImageSelect} className="hidden" />
+                                    <button onClick={() => fileInputRef.current?.click()} className="bg-slate-900 border border-white/10 p-3 rounded-2xl text-slate-400 hover:text-cyan-400 transition"><Icon name="Camera" className="w-5 h-5" /></button>
+                                    <button onClick={toggleVoiceRecognition} className={`p-3 rounded-2xl transition ${isListening ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-900 border border-white/10 text-slate-400 hover:text-violet-400'}`}><Icon name="Mic" className="w-5 h-5" /></button>
+                                    <input type="text" value={inputMsg} onChange={e => setInputMsg(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSendMessage()} placeholder={`Comunica con ${currentSpec.name}...`} className="flex-1 bg-slate-900/80 border border-white/10 rounded-2xl px-4 text-sm text-white focus:outline-none focus:border-violet-500/50" disabled={loading} />
+                                    <button onClick={handleSendMessage} disabled={loading || (!inputMsg.trim() && images.length === 0)} className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 disabled:opacity-50 text-white p-4 rounded-2xl shadow-[0_0_15px_rgba(139,92,246,0.3)] transition"><Icon name="Send" className="w-5 h-5" /></button>
                                 </div>
                             </div>
                         </main>
@@ -768,77 +505,34 @@ export default function App() {
                 )}
 
                 {activeTab === 'editor' && (
-                    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden w-full animate-fade-in bg-[#020617]">
+                    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden bg-[#020617]">
                         <div className="w-full lg:w-1/2 flex flex-col border-r border-white/5">
-                            <div className="bg-slate-900/60 p-3 border-b border-white/5 flex items-center gap-2 text-xs font-bold text-slate-300">
-                                <Icon name="Code2" className="w-4 h-4 text-violet-400" /> Editor PWA
-                            </div>
-                            <textarea value={sandboxCode} onChange={(e) => setSandboxCode(e.target.value)} className="flex-1 w-full bg-transparent text-cyan-300 font-mono text-[13px] p-6 focus:outline-none resize-none leading-relaxed" spellCheck="false" />
+                            <div className="bg-slate-900/60 p-3 border-b border-white/5 text-xs font-bold text-slate-300"><Icon name="Code2" className="w-4 h-4 text-violet-400 inline mr-2" />Editor PWA</div>
+                            <textarea value={sandboxCode} onChange={(e) => setSandboxCode(e.target.value)} className="flex-1 bg-transparent text-cyan-300 font-mono text-xs p-4 focus:outline-none resize-none" spellCheck="false" />
                         </div>
                         <div className="w-full lg:w-1/2 flex flex-col bg-slate-950">
-                            <div className="bg-slate-900/60 p-3 border-b border-white/5 flex items-center gap-2 text-xs font-bold text-slate-300">
-                                <Icon name="Monitor" className="w-4 h-4 text-cyan-400" /> Preview en Vivo
-                            </div>
-                            <div className="flex-1 bg-white p-0 relative">
-                                <iframe srcDoc={previewCode} title="PWA Preview" className="w-full h-full border-none absolute inset-0" sandbox="allow-scripts allow-modals allow-forms allow-popups" />
-                            </div>
+                            <div className="bg-slate-900/60 p-3 border-b border-white/5 text-xs font-bold text-slate-300"><Icon name="Monitor" className="w-4 h-4 text-cyan-400 inline mr-2" />Preview</div>
+                            <iframe srcDoc={previewCode} title="Preview" className="w-full h-full border-none bg-white" sandbox="allow-scripts" />
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* Modales (API Key, Nuevo Proyecto, Analizar URL) */}
             {showKeyModal && (
                 <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-2"><Icon name="Key" className="w-6 h-6 text-violet-400" /> API Key de Gemini</h3>
-                            <button onClick={() => setShowKeyModal(false)} className="text-slate-400 hover:text-white p-1"><Icon name="X" className="w-5 h-5"/></button>
-                        </div>
-                        <input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="AIzaSy..." className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-6 focus:border-violet-500 focus:outline-none font-mono text-sm" />
-                        <button onClick={() => { setShowKeyModal(false); showToast("Clave API guardada y sincronizada"); }} className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white font-bold py-3 rounded-2xl transition-all shadow-lg text-sm">Guardar y Conectar</button>
+                    <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-md shadow-2xl">
+                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><Icon name="Key" className="w-6 h-6 text-violet-400" /> API Key de Gemini</h3>
+                        <p className="text-sm text-slate-300 mb-4">Obtén tu clave gratuita en <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" className="text-cyan-400 underline">Google AI Studio</a></p>
+                        <input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="AIzaSy..." className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-4 focus:border-violet-500 focus:outline-none font-mono" />
+                        <button onClick={() => setShowKeyModal(false)} className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 rounded-2xl transition">Guardar Clave</button>
                     </div>
                 </div>
             )}
 
-            {showNewProjectModal && (
-                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-2"><Icon name="Plus" className="w-6 h-6 text-cyan-400" /> Nuevo Proyecto</h3>
-                            <button onClick={() => setShowNewProjectModal(false)} className="text-slate-400 hover:text-white p-1"><Icon name="X" className="w-5 h-5"/></button>
-                        </div>
-                        <input type="text" value={newProjectName} onChange={(e) => setNewProjectName(e.target.value)} placeholder="Nombre del proyecto..." className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-6 focus:border-cyan-500 focus:outline-none text-sm" />
-                        <button onClick={createNewProject} disabled={!newProjectName.trim()} className="w-full bg-gradient-to-r from-cyan-600 to-blue-500 hover:opacity-90 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-all shadow-lg text-sm">Crear Proyecto</button>
-                    </div>
-                </div>
-            )}
-
-            {showUrlModal && (
-                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-2"><Icon name="Link" className="w-6 h-6 text-fuchsia-400" /> Analizar URL</h3>
-                            <button onClick={() => { setShowUrlModal(false); setUrlAnalyzing(false); }} className="text-slate-400 hover:text-white p-1"><Icon name="X" className="w-5 h-5"/></button>
-                        </div>
-                        <input type="url" value={urlInput} onChange={(e) => setUrlInput(e.target.value)} placeholder="https://ejemplo.com" className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-6 focus:border-fuchsia-500 focus:outline-none text-sm" disabled={urlAnalyzing} />
-                        <button onClick={analyzeUrl} disabled={!urlInput.trim() || urlAnalyzing} className="w-full bg-gradient-to-r from-fuchsia-600 to-pink-500 hover:opacity-90 disabled:opacity-50 text-white font-bold py-3 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 text-sm">
-                            {urlAnalyzing ? <><span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></span> Analizando...</> : "Analizar e Inyectar"}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            <nav className="xl:hidden bg-[#020617]/95 border-t border-white/5 p-2 flex justify-around items-center shrink-0 z-40 pb-safe backdrop-blur-3xl absolute bottom-0 w-full">
-                <button onClick={() => setActiveTab('home')} className={`p-2 rounded-2xl transition-all flex flex-col items-center gap-1 ${activeTab === 'home' ? 'text-cyan-400' : 'text-slate-500'}`}>
-                    <Icon name="Zap" className="w-5 h-5" /><span className="text-[10px] font-bold">Inicio</span>
-                </button>
-                <button onClick={() => setActiveTab('chat')} className={`p-2 rounded-2xl transition-all flex flex-col items-center gap-1 ${activeTab === 'chat' ? 'text-violet-400' : 'text-slate-500'}`}>
-                    <Icon name="MessageSquare" className="w-5 h-5" /><span className="text-[10px] font-bold">Chat</span>
-                </button>
-                <button onClick={() => setActiveTab('editor')} className={`p-2 rounded-2xl transition-all flex flex-col items-center gap-1 ${activeTab === 'editor' ? 'text-fuchsia-400' : 'text-slate-500'}`}>
-                    <Icon name="Code2" className="w-5 h-5" /><span className="text-[10px] font-bold">Forja</span>
-                </button>
+            <nav className="xl:hidden bg-[#020617]/95 border-t border-white/5 p-2 flex justify-around items-center fixed bottom-0 w-full z-40 backdrop-blur-xl">
+                <button onClick={() => setActiveTab('home')} className={`p-2 rounded-xl flex flex-col items-center ${activeTab === 'home' ? 'text-cyan-400' : 'text-slate-500'}`}><Icon name="Zap" className="w-5 h-5" /><span className="text-[10px]">Inicio</span></button>
+                <button onClick={() => setActiveTab('chat')} className={`p-2 rounded-xl flex flex-col items-center ${activeTab === 'chat' ? 'text-violet-400' : 'text-slate-500'}`}><Icon name="MessageSquare" className="w-5 h-5" /><span className="text-[10px]">Chat</span></button>
+                <button onClick={() => setActiveTab('editor')} className={`p-2 rounded-xl flex flex-col items-center ${activeTab === 'editor' ? 'text-fuchsia-400' : 'text-slate-500'}`}><Icon name="Code2" className="w-5 h-5" /><span className="text-[10px]">Forja</span></button>
             </nav>
         </div>
     );
