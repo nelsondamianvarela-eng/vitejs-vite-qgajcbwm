@@ -27,59 +27,80 @@ export const supabase = {
     })
 };
 
-// --- LOGO INTEGRADO ---
+// --- NUEVO LOGO INTEGRADO (Variante: Synapse por defecto) ---
 export function LogoMark({ variant = "synapse", className = "w-10 h-10" }) {
-    const gid = `nl-${variant}`;
-    return (
-        <div className={`${className} rounded-2xl bg-[#1E293B] ring-1 ring-white/10 p-1.5 flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] shrink-0`}>
-            <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" aria-label="NeuraLink Studio">
-                <defs>
-                    <linearGradient id={gid} x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" stopColor="#8B5CF6" />
-                        <stop offset="1" stopColor="#06B6D4" />
-                    </linearGradient>
-                </defs>
-                {variant === "synapse" && (
-                    <>
-                        <line x1="24" y1="24" x2="24" y2="9" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
-                        <line x1="24" y1="24" x2="11" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
-                        <line x1="24" y1="24" x2="37" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
-                        <line x1="24" y1="24" x2="38" y2="14" stroke={`url(#${gid})`} strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
-                        <circle cx="24" cy="9" r="3" fill={`url(#${gid})`} />
-                        <circle cx="11" cy="32" r="3" fill={`url(#${gid})`} />
-                        <circle cx="37" cy="32" r="3" fill={`url(#${gid})`} />
-                        <circle cx="38" cy="14" r="2" fill={`url(#${gid})`} />
-                        <circle cx="24" cy="24" r="4.5" fill={`url(#${gid})`} />
-                    </>
-                )}
-            </svg>
-        </div>
-    );
+  const gid = `nl-${variant}`;
+  return (
+    <div className={`${className} rounded-2xl bg-[#1E293B] ring-1 ring-white/10 p-1.5 flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] shrink-0`}>
+      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" aria-label="NeuraLink Studio">
+        <defs>
+          <linearGradient id={gid} x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stopColor="#8B5CF6" />
+            <stop offset="1" stopColor="#06B6D4" />
+          </linearGradient>
+        </defs>
+
+        {variant === "portal" && (
+          <>
+            <polygon points="24,10 36.12,17 36.12,31 24,38 11.88,31 11.88,17" stroke={`url(#${gid})`} strokeWidth="2.4" strokeLinejoin="round" />
+            <line x1="24" y1="24" x2="24" y2="10" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
+            <line x1="24" y1="24" x2="36.12" y2="31" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
+            <line x1="24" y1="24" x2="11.88" y2="31" stroke={`url(#${gid})`} strokeWidth="1.2" opacity="0.5" />
+            <circle cx="24" cy="24" r="4" fill={`url(#${gid})`} />
+          </>
+        )}
+
+        {variant === "synapse" && (
+          <>
+            <line x1="24" y1="24" x2="24" y2="9"  stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+            <line x1="24" y1="24" x2="11" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+            <line x1="24" y1="24" x2="37" y2="32" stroke={`url(#${gid})`} strokeWidth="2" strokeLinecap="round" />
+            <line x1="24" y1="24" x2="38" y2="14" stroke={`url(#${gid})`} strokeWidth="1.4" strokeLinecap="round" opacity="0.7" />
+            <circle cx="24" cy="9"  r="3"   fill={`url(#${gid})`} />
+            <circle cx="11" cy="32" r="3"   fill={`url(#${gid})`} />
+            <circle cx="37" cy="32" r="3"   fill={`url(#${gid})`} />
+            <circle cx="38" cy="14" r="2"   fill={`url(#${gid})`} />
+            <circle cx="24" cy="24" r="4.5" fill={`url(#${gid})`} />
+          </>
+        )}
+
+        {variant === "nexus" && (
+          <>
+            <line x1="11" y1="24" x2="37" y2="24" stroke={`url(#${gid})`} strokeWidth="2.4" strokeLinecap="round" />
+            <circle cx="11" cy="24" r="4" fill={`url(#${gid})`} />
+            <circle cx="37" cy="24" r="4" fill={`url(#${gid})`} />
+            <path d="M24 19 L29 24 L24 29 L19 24 Z" fill={`url(#${gid})`} />
+            <path d="M24 21.6 L26.4 24 L24 26.4 L21.6 24 Z" fill="#0B1220" />
+          </>
+        )}
+      </svg>
+    </div>
+  );
 }
 
 export function Logo({ withTagline = false }) {
-    return (
-        <div className="flex items-center gap-3 select-none">
-            <LogoMark variant="synapse" className="w-10 h-10" />
-            <div className="leading-tight">
-                <div className="flex items-baseline gap-1.5">
-                    <span className="font-extrabold text-base lg:text-lg tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
-                        NeuraLink
-                    </span>
-                    <span className="font-mono text-[11px] lg:text-xs text-slate-400 border border-white/10 rounded-md px-1.5 py-0.5">
-                        Studio
-                    </span>
-                </div>
-                {withTagline ? (
-                    <p className="text-[10px] text-cyan-400/80 font-medium mt-0.5 tracking-wide">Conectando mentes, creando apps</p>
-                ) : (
-                    <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> Sincronización neural activa
-                    </p>
-                )}
-            </div>
+  return (
+    <div className="flex items-center gap-3 select-none">
+      <LogoMark variant="synapse" className="w-10 h-10" />
+      <div className="leading-tight">
+        <div className="flex items-baseline gap-1.5">
+          <span className="font-extrabold text-base lg:text-lg tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
+            NeuraLink
+          </span>
+          <span className="font-mono text-[11px] lg:text-xs text-slate-400 border border-white/10 rounded-md px-1.5 py-0.5">
+            Studio
+          </span>
         </div>
-    );
+        {withTagline ? (
+          <p className="text-[10px] text-cyan-400/80 font-medium mt-0.5 tracking-wide">Conectando mentes, creando apps</p>
+        ) : (
+          <p className="text-[10px] text-slate-500 flex items-center gap-1 mt-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" /> Sincronización neural activa
+          </p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 const Icon = ({ name, className = "w-5 h-5" }) => {
@@ -114,7 +135,7 @@ const safeSpeak = (text) => {
         if (!('speechSynthesis' in window)) return false;
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'es-419'; // Español latino
+        utter.lang = 'es-ES';
         utter.rate = 1.05;
         window.speechSynthesis.speak(utter);
         return true;
@@ -131,15 +152,12 @@ const SPECIALISTS = [
     { id: 'marketing', name: 'Marketing Neuronal', icon: 'TrendingUp', color: 'from-orange-600 to-red-600', bio: 'Estrategia de impacto', system: 'Eres experto en Marketing Digital y propuestas de valor disruptivas. Responde en español.' }
 ];
 
-// --- CORREGIDO: Modelo Gemini estable ---
 const callGeminiAPI = async (specialist, messages, images = [], currentCode = '', apiKey = '') => {
     const key = apiKey || localStorage.getItem('neuralink_gemini_key') || '';
     if (!key) {
         throw new Error('Por favor ingresa tu clave API de Google AI Studio haciendo clic en "Clave API" arriba.');
     }
-    
-    // CORRECCIÓN PRINCIPAL: Usar gemini-1.5-flash (modelo estable)
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${key}`;
     
     const contents = [];
     messages.forEach((m, idx) => {
@@ -197,13 +215,17 @@ const fileToBase64 = (file) => new Promise((resolve, reject) => {
     reader.readAsDataURL(file);
 });
 
+// --- SEGURIDAD: Función renderFormattedText con protección anti-XSS ---
 const renderFormattedText = (text) => {
     if (!text) return '';
+    
+    // 1. Escapar HTML peligroso primero (Protección Ciberseguridad)
     let safeText = text
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
 
+    // 2. Aplicar el formato markdown seguro
     let formatted = safeText
         .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-slate-950/90 p-3 rounded-2xl my-2 overflow-x-auto border border-cyan-500/20 text-xs font-mono text-cyan-300"><code>$2</code></pre>')
         .replace(/`([^`]+)`/g, '<code class="bg-slate-900 text-cyan-400 px-1.5 py-0.5 rounded text-xs font-mono border border-cyan-500/10">$1</code>')
@@ -218,7 +240,10 @@ export default function App() {
     const [showKeyModal, setShowKeyModal] = useState(false);
     const [activeTab, setActiveTab] = useState('home');
     const [activeSpecialist, setActiveSpecialist] = useState('director');
+    
     const [syncToken, setSyncToken] = useState(() => localStorage.getItem('neuralink_sync_token') || 'NL-67P5');
+    const [showSyncModal, setShowSyncModal] = useState(false);
+
     const [chats, setChats] = useState(() => {
         try {
             const saved = localStorage.getItem('neuralink_neural_chats');
@@ -229,6 +254,18 @@ export default function App() {
         } catch(e) {}
         return {};
     });
+    
+    const [tasks, setTasks] = useState(() => {
+        try {
+            const saved = localStorage.getItem('neuralink_neural_tasks');
+            return saved ? JSON.parse(saved) : [
+                { id: 1, title: 'Definir arquitectura principal con Supabase', assignee: 'director', status: 'done' },
+                { id: 2, title: 'Generar conceptos visuales con Neón Cyan', assignee: 'designer', status: 'progress' },
+                { id: 3, title: 'Optimizar PWA y sincronización cloud', assignee: 'seo', status: 'todo' }
+            ];
+        } catch(e) { return []; }
+    });
+
     const [sandboxCode, setSandboxCode] = useState(() => {
         return localStorage.getItem('neuralink_neural_code') || `<!DOCTYPE html>
 <html lang="es">
@@ -237,15 +274,18 @@ export default function App() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeuraLink Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-[#020617] text-white min-h-[100dvh] flex flex-col items-center justify-center p-6 font-sans">
-    <div class="text-center space-y-4">
+<body class="bg-[#020617] text-white min-h-[100dvh] flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.1)_0,transparent_70%)] pointer-events-none"></div>
+    <div class="text-center space-y-4 relative z-10 max-w-lg p-8 rounded-3xl bg-slate-900/40 border border-white/5 backdrop-blur-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
         <h1 class="text-3xl font-extrabold text-white">NeuraLink Studio</h1>
         <p class="text-slate-300 text-sm">Conectando mentes, creando apps.</p>
     </div>
 </body>
 </html>`;
     });
+
     const [previewCode, setPreviewCode] = useState(sandboxCode);
     const [inputMsg, setInputMsg] = useState('');
     const [images, setImages] = useState([]);
@@ -257,18 +297,27 @@ export default function App() {
     useEffect(() => {
         try { localStorage.setItem('neuralink_neural_chats', JSON.stringify(chats)); } catch(e) {}
     }, [chats]);
+
+    useEffect(() => {
+        try { localStorage.setItem('neuralink_neural_tasks', JSON.stringify(tasks)); } catch(e) {}
+    }, [tasks]);
+
     useEffect(() => {
         try { localStorage.setItem('neuralink_neural_code', sandboxCode); } catch(e) {}
     }, [sandboxCode]);
+
     useEffect(() => {
         try { localStorage.setItem('neuralink_gemini_key', apiKey); } catch(e) {}
     }, [apiKey]);
+
     useEffect(() => {
         try { localStorage.setItem('neuralink_sync_token', syncToken); } catch(e) {}
     }, [syncToken]);
 
     useEffect(() => {
-        const timer = setTimeout(() => { setPreviewCode(sandboxCode); }, 500);
+        const timer = setTimeout(() => {
+            setPreviewCode(sandboxCode);
+        }, 500);
         return () => clearTimeout(timer);
     }, [sandboxCode]);
 
@@ -284,10 +333,13 @@ export default function App() {
     const toggleVoiceRecognition = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) return;
-        if (isListening) { setIsListening(false); return; }
+        if (isListening) {
+            setIsListening(false);
+            return;
+        }
         try {
             const recognition = new SpeechRecognition();
-            recognition.lang = 'es-419';
+            recognition.lang = 'es-ES';
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
             recognition.onstart = () => setIsListening(true);
@@ -299,7 +351,9 @@ export default function App() {
             recognition.onerror = () => setIsListening(false);
             recognition.onend = () => setIsListening(false);
             recognition.start();
-        } catch(e) { setIsListening(false); }
+        } catch(e) {
+            setIsListening(false);
+        }
     };
 
     const handleImageSelect = async (e) => {
@@ -311,19 +365,25 @@ export default function App() {
 
     const handleSendMessage = async () => {
         if (!inputMsg.trim() && images.length === 0) return;
-        if (!apiKey.trim()) { setShowKeyModal(true); return; }
+        if (!apiKey.trim()) {
+            setShowKeyModal(true);
+            return;
+        }
 
         const spec = SPECIALISTS.find(s => s.id === activeSpecialist);
         const promptText = inputMsg || '(Imagen adjunta)';
+
         const userMessage = { 
             role: 'user', 
             text: promptText, 
             images: images.map(i => ({ name: i.name, preview: i.preview })),
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
         };
+        
         const currentSpecChat = chats[activeSpecialist] || [];
         const updatedChat = [...currentSpecChat, userMessage];
         setChats(prev => ({ ...prev, [activeSpecialist]: updatedChat }));
+
         setInputMsg('');
         const currentImages = [...images];
         setImages([]);
@@ -335,11 +395,13 @@ export default function App() {
             const botMessage = { role: 'model', text: replyText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
             const finalChat = [...updatedChat, botMessage];
             setChats(prev => ({ ...prev, [activeSpecialist]: finalChat }));
+
             try {
                 await supabase.from('neuralink_logs').insert([
                     { token: syncToken, specialist: activeSpecialist, prompt: promptText, response: replyText }
                 ]);
             } catch(dbErr) {}
+
         } catch (err) {
             setErrorMsg(`Error: ${err.message}`);
         } finally {
@@ -360,15 +422,29 @@ export default function App() {
 
     return (
         <div className="h-[100dvh] w-screen flex flex-col bg-[#020617] text-slate-100 overflow-hidden font-sans selection:bg-cyan-500 selection:text-slate-950 relative" translate="no">
+            
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.3) 1px, transparent 1px)`, backgroundSize: '60px 60px' }} />
+                <div 
+                    className="absolute inset-0 opacity-[0.03]"
+                    style={{
+                        backgroundImage: `
+                            linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(6, 182, 212, 0.3) 1px, transparent 1px)
+                        `,
+                        backgroundSize: '60px 60px'
+                    }}
+                />
                 <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[120px] animate-[pulse_8s_ease-in-out_infinite]"></div>
                 <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] animate-[pulse_8s_ease-in-out_infinite]" style={{ animationDelay: '4s' }}></div>
             </div>
 
             <header className="sticky top-0 z-40 bg-[#020617]/85 backdrop-blur-2xl saturate-150 border-b border-white/5 shrink-0">
                 <div className="mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
-                    <div className="cursor-pointer" onClick={() => setActiveTab('home')}><Logo /></div>
+                    <div className="cursor-pointer" onClick={() => setActiveTab('home')}>
+                        <Logo />
+                    </div>
+
+                    {/* --- NAVEGACIÓN RESTAURADA (Director QA) --- */}
                     <nav className="hidden xl:flex items-center gap-1.5 bg-slate-900/40 p-1.5 rounded-2xl border border-white/5 backdrop-blur-2xl">
                         <button onClick={() => setActiveTab('home')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'home' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
                             <Icon name="Zap" className="w-4 h-4" /> Inicio
@@ -379,12 +455,23 @@ export default function App() {
                         <button onClick={() => setActiveTab('editor')} className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === 'editor' ? 'bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}>
                             <Icon name="Code2" className="w-4 h-4" /> Forja & PWA
                         </button>
+                        <button onClick={() => alert("Asistente Prompts en desarrollo (Oleada 2)")} className="px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-800/50">
+                            <Icon name="Sparkles" className="w-4 h-4" /> Prompts
+                        </button>
+                        <button onClick={() => alert("Kanban interactivo en desarrollo (Oleada 2)")} className="px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-800/50">
+                            <Icon name="Kanban" className="w-4 h-4" /> Kanban
+                        </button>
                     </nav>
+
                     <div className="flex items-center gap-3">
                         <div className="hidden md:flex items-center gap-2 bg-slate-900/60 border border-violet-500/20 rounded-full px-3.5 py-1.5 backdrop-blur-xl">
-                            <div className="relative"><div className="w-2 h-2 rounded-full bg-violet-400" /><div className="absolute inset-0 w-2 h-2 rounded-full bg-violet-400 animate-ping" /></div>
+                            <div className="relative">
+                                <div className="w-2 h-2 rounded-full bg-violet-400" />
+                                <div className="absolute inset-0 w-2 h-2 rounded-full bg-violet-400 animate-ping" />
+                            </div>
                             <span className="text-xs text-violet-300 font-medium">Supabase Cloud</span>
                         </div>
+
                         <button onClick={() => setShowKeyModal(true)} className="bg-slate-900/40 hover:bg-slate-800/60 border border-white/5 text-xs px-3.5 py-2.5 rounded-xl font-bold text-slate-100 hover:text-white transition-all flex items-center gap-2 backdrop-blur-xl shadow-lg">
                             <Icon name="Key" className="w-4 h-4 text-cyan-400" /> Clave API
                         </button>
@@ -396,12 +483,14 @@ export default function App() {
                 {activeTab === 'home' && (
                     <div className="flex-1 overflow-y-auto scroll-smooth bg-transparent w-full animate-fade-in p-6">
                         <section className="max-w-5xl mx-auto pt-12 pb-8 text-center space-y-6">
-                            <div className="flex justify-center mb-4"><Logo withTagline /></div>
+                            <div className="flex justify-center mb-4">
+                                <Logo withTagline />
+                            </div>
                             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mt-4">
                                 Crea apps conectando <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">mentes y código</span>
                             </h1>
                             <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                                Tu estudio neural con Supabase integrado. Diseña, chatea con especialistas autónomos y genera aplicaciones PWA.
+                                Tu estudio neural con Supabase integrado. Diseña, chatea con especialistas autónomos y genera aplicaciones PWA listas para producción en segundos.
                             </p>
                             <div className="flex flex-wrap justify-center gap-4 pt-4">
                                 <button onClick={() => setActiveTab('chat')} className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-500 hover:opacity-90 text-white font-bold px-8 py-4 rounded-2xl shadow-[0_0_30px_rgba(217,70,239,0.5)] transition-all flex items-center gap-2">
@@ -426,7 +515,11 @@ export default function App() {
                                 {SPECIALISTS.map(spec => {
                                     const hasChat = chats[spec.id] && chats[spec.id].length > 0;
                                     return (
-                                        <button key={spec.id} onClick={() => { setActiveSpecialist(spec.id); setSidebarOpen(false); }} className={`w-full text-left p-3 rounded-2xl transition-all flex items-center gap-3 relative bg-slate-900/40 backdrop-blur-2xl border ${activeSpecialist === spec.id ? 'border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.2)]' : 'border-white/5 hover:border-white/10'}`}>
+                                        <button 
+                                            key={spec.id} 
+                                            onClick={() => { setActiveSpecialist(spec.id); setSidebarOpen(false); }}
+                                            className={`w-full text-left p-3 rounded-2xl transition-all flex items-center gap-3 relative bg-slate-900/40 backdrop-blur-2xl border ${activeSpecialist === spec.id ? 'border-violet-500/50 shadow-[0_0_20px_rgba(139,92,246,0.2)]' : 'border-white/5 hover:border-white/10'}`}
+                                        >
                                             <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0">
                                                 <Icon name={spec.icon} className="w-5 h-5" />
                                             </div>
@@ -434,7 +527,9 @@ export default function App() {
                                                 <p className={`text-sm font-bold truncate ${activeSpecialist === spec.id ? 'text-white' : 'text-slate-300'}`}>{spec.name}</p>
                                                 <p className="text-[10px] text-slate-400 truncate">{spec.bio}</p>
                                             </div>
-                                            {hasChat && <span className="w-2 h-2 rounded-full bg-violet-400 absolute top-3 right-3 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></span>}
+                                            {hasChat && (
+                                                <span className="w-2 h-2 rounded-full bg-violet-400 absolute top-3 right-3 shadow-[0_0_8px_rgba(139,92,246,0.8)]"></span>
+                                            )}
                                         </button>
                                     );
                                 })}
@@ -442,62 +537,132 @@ export default function App() {
                         </aside>
 
                         <main className="flex-1 flex flex-col bg-transparent overflow-hidden relative">
-                            <div className="bg-slate-900/40 backdrop-blur-2xl border-b border-white/5 p-4 md:p-5 text-white flex items-center justify-between shadow-lg shrink-0">
-                                <div className="flex items-center gap-3">
+                            <div className="bg-slate-900/40 backdrop-blur-2xl border-b border-white/5 p-4 md:p-5 text-white flex items-center justify-between shadow-lg shrink-0 relative overflow-hidden">
+                                <div className="flex items-center gap-3 relative z-10">
                                     <button onClick={() => setSidebarOpen(!sidebarOpen)} className="xl:hidden text-white p-1 bg-white/5 rounded-lg"><Icon name="Layout" className="w-5 h-5" /></button>
                                     <div className="w-10 h-10 rounded-2xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400 shrink-0 backdrop-blur-md">
                                         <Icon name={currentSpec.icon} className="w-6 h-6" />
                                     </div>
                                     <div>
                                         <h2 className="font-bold text-base md:text-lg text-white">{currentSpec.name}</h2>
-                                        <p className="text-xs text-slate-300 font-medium">{currentSpec.bio}</p>
+                                        <p className="text-xs text-slate-300 font-medium truncate max-w-[200px] md:max-w-md">{currentSpec.bio} • NeuraLink Cloud Active</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scroll-smooth">
+                            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scroll-smooth bg-transparent">
+                                
+                                {/* --- EMPTY STATE SEGURO + ONBOARDING (Seguridad + Marketing) --- */}
                                 {messages.length === 0 && (
-                                    <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
-                                        <Icon name={currentSpec.icon} className="w-16 h-16 text-slate-600" />
-                                        <p className="text-sm">Iniciando enlace neural con {currentSpec.name}...</p>
+                                    <div className="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto text-slate-300 p-4">
+                                        <div className="w-16 h-16 rounded-2xl bg-[#1E293B] ring-1 ring-white/10 flex items-center justify-center text-violet-400 mb-6 mx-auto shadow-lg">
+                                            <Icon name={currentSpec.icon} className="w-8 h-8" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-white mb-2">Conectando con {currentSpec.name}</h3>
+                                        <p className="text-sm text-slate-400 mb-8 max-w-md mx-auto leading-relaxed">
+                                            El especialista está listo. Selecciona una acción sugerida para comenzar o describe tu visión en el cuadro de abajo.
+                                        </p>
+                                        
+                                        <div className="flex flex-wrap justify-center gap-3 w-full">
+                                            <button onClick={() => setInputMsg(`Por favor, genera una estructura inicial de PWA enfocada en ${currentSpec.bio.toLowerCase()}.`)} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 hover:border-violet-500/30 text-xs text-slate-300 px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                                                <Icon name="Rocket" className="w-3 h-3 text-cyan-400" /> Crear estructura inicial
+                                            </button>
+                                            <button onClick={() => setInputMsg(`¿Cuáles son las mejores prácticas y tendencias actuales para tu área de especialidad?`)} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 hover:border-violet-500/30 text-xs text-slate-300 px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                                                <Icon name="TrendingUp" className="w-3 h-3 text-violet-400" /> Tendencias y consejos
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
+
                                 {messages.map((m, idx) => (
-                                    <div key={idx} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[85%] md:max-w-[75%] rounded-3xl p-4 md:p-5 shadow-lg ${m.role === 'user' ? 'bg-gradient-to-br from-violet-600/90 to-fuchsia-600/90 text-white' : 'bg-slate-900/80 text-slate-200 border border-white/5 backdrop-blur-xl'}`}>
+                                    <div key={idx} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
+                                        <div className={`max-w-3xl rounded-3xl p-4 md:p-5 transition-all duration-300 bg-slate-900/40 backdrop-blur-2xl border ${
+                                            m.role === 'user' 
+                                                ? 'border-violet-500/40 text-white shadow-[0_0_20px_rgba(139,92,246,0.15)] rounded-br-sm' 
+                                                : 'border-white/5 text-slate-200 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-bl-sm'
+                                        }`}>
                                             {m.images && m.images.length > 0 && (
                                                 <div className="flex gap-2 mb-3 flex-wrap">
-                                                    {m.images.map((img, i) => (<img key={i} src={img.preview} alt="" className="w-24 h-24 object-cover rounded-xl border border-white/20" />))}
+                                                    {m.images.map((img, i) => (
+                                                        <img key={i} src={img.preview} alt="Adjunta" className="w-32 h-32 object-cover rounded-xl border border-white/10 shadow" />
+                                                    ))}
                                                 </div>
                                             )}
-                                            <div className="text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: m.role === 'model' ? renderFormattedText(m.text) : m.text.replace(/\n/g, '<br/>') }} />
-                                            <span className="text-[10px] mt-3 block opacity-60">{m.time}</span>
+                                            {m.role === 'model' ? (
+                                                <div className="markdown-content text-sm leading-relaxed relative z-10" dangerouslySetInnerHTML={{ __html: renderFormattedText(m.text) }} />
+                                            ) : (
+                                                <p className="text-sm whitespace-pre-wrap leading-relaxed text-white">{m.text}</p>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-2 mt-2 px-2">
+                                            <span className="text-[10px] font-medium text-slate-400">{m.time}</span>
                                             {m.role === 'model' && (
-                                                <div className="flex gap-2 mt-3 pt-3 border-t border-white/10">
-                                                    <button onClick={() => safeSpeak(m.text)} className="text-xs bg-white/5 hover:bg-white/10 px-2 py-1 rounded flex items-center gap-1"><Icon name="Volume2" className="w-3 h-3" /> Leer</button>
-                                                    {/```/.test(m.text) && (<button onClick={() => extractAndApplyCode(m.text)} className="text-xs bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 px-2 py-1 rounded flex items-center gap-1"><Icon name="Rocket" className="w-3 h-3" /> Aplicar</button>)}
-                                                </div>
+                                                <>
+                                                    <button onClick={() => safeSpeak(m.text.replace(/```[\s\S]*?```/g, 'bloque de código').replace(/[*#`]/g, ''))} className="text-[10px] bg-slate-900/60 hover:bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md border border-white/5 transition flex items-center gap-1" title="Escuchar respuesta">
+                                                        <Icon name="Volume2" className="w-3 h-3" /> Leer
+                                                    </button>
+                                                    {/```(?:html|xml)?\n([\s\S]*?)```/.test(m.text) && (
+                                                        <button onClick={() => extractAndApplyCode(m.text)} className="text-[10px] bg-slate-900/60 hover:bg-slate-800 text-violet-400 px-2.5 py-1 rounded-md border border-violet-500/30 transition flex items-center gap-1 shadow-inner">
+                                                            <Icon name="Rocket" className="w-3 h-3" /> Aplicar Código
+                                                        </button>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     </div>
                                 ))}
+
                                 {loading && (
-                                    <div className="flex items-center gap-3 bg-slate-900/60 border border-white/5 p-4 rounded-2xl w-fit backdrop-blur-xl">
-                                        <div className="flex gap-1"><span className="w-2 h-2 bg-violet-500 rounded-full animate-bounce"></span><span className="w-2 h-2 bg-fuchsia-500 rounded-full animate-bounce" style={{animationDelay:'0.1s'}}></span><span className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{animationDelay:'0.2s'}}></span></div>
-                                        <span className="text-xs text-slate-400">Procesando...</span>
+                                    <div className="flex items-center gap-4 bg-slate-900/40 border border-white/5 p-4 rounded-3xl w-fit backdrop-blur-2xl animate-pulse shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+                                        <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400">
+                                            <Icon name={currentSpec.icon} className="w-5 h-5" />
+                                        </div>
+                                        <p className="text-sm text-violet-400 font-medium">Sintetizando y guardando en Supabase...</p>
                                     </div>
                                 )}
-                                {errorMsg && <div className="bg-red-950/50 border border-red-500/50 text-red-200 text-xs p-4 rounded-2xl">{errorMsg}</div>}
-                                <div ref={chatBottomRef} />
+
+                                {errorMsg && (
+                                    <div className="bg-red-950/40 border border-red-500/30 p-4 rounded-2xl text-sm text-red-300 backdrop-blur-xl">
+                                        {errorMsg}
+                                    </div>
+                                )}
+
+                                <div ref={chatBottomRef} className="h-2" />
                             </div>
 
-                            <div className="p-4 bg-slate-950/60 border-t border-white/5 backdrop-blur-2xl">
-                                <div className="flex gap-2 max-w-4xl mx-auto">
+                            <div className="p-3 md:p-4 bg-slate-900/40 border-t border-white/5 shrink-0 backdrop-blur-2xl">
+                                <div className="flex gap-2 max-w-5xl mx-auto items-center">
                                     <input type="file" ref={fileInputRef} accept="image/*" multiple onChange={handleImageSelect} className="hidden" />
-                                    <button onClick={() => fileInputRef.current?.click()} className="bg-slate-900 border border-white/10 p-3 rounded-2xl text-slate-400 hover:text-cyan-400 transition"><Icon name="Camera" className="w-5 h-5" /></button>
-                                    <button onClick={toggleVoiceRecognition} className={`p-3 rounded-2xl transition ${isListening ? 'bg-red-600 text-white animate-pulse' : 'bg-slate-900 border border-white/10 text-slate-400 hover:text-violet-400'}`}><Icon name="Mic" className="w-5 h-5" /></button>
-                                    <input type="text" value={inputMsg} onChange={e => setInputMsg(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSendMessage()} placeholder={`Comunica con ${currentSpec.name}...`} className="flex-1 bg-slate-900/80 border border-white/10 rounded-2xl px-4 text-sm text-white focus:outline-none focus:border-violet-500/50" disabled={loading} />
-                                    <button onClick={handleSendMessage} disabled={loading || (!inputMsg.trim() && images.length === 0)} className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 disabled:opacity-50 text-white p-4 rounded-2xl shadow-[0_0_15px_rgba(139,92,246,0.3)] transition"><Icon name="Send" className="w-5 h-5" /></button>
+                                    <button onClick={() => fileInputRef.current?.click()} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 text-slate-300 p-3 md:p-3.5 rounded-2xl text-sm transition-all flex items-center justify-center" title="Adjuntar imagen">
+                                        <Icon name="Camera" className="w-4 h-4 text-slate-300" />
+                                    </button>
+                                    
+                                    {/* --- RESTAURADO: BOTÓN DE GENERAR VISUAL (QA) --- */}
+                                    <button onClick={() => setInputMsg(prev => prev + "[Generar concepto visual IA para: ] ")} className="bg-slate-900/60 hover:bg-slate-800 border border-white/5 text-slate-300 p-3 md:p-3.5 rounded-2xl text-sm transition-all flex items-center justify-center" title="Generar Prompt Visual">
+                                        <Icon name="Palette" className="w-4 h-4 text-violet-400" />
+                                    </button>
+
+                                    <button 
+                                        onClick={toggleVoiceRecognition} 
+                                        className={`p-3 md:p-3.5 rounded-2xl text-sm border transition-all flex items-center justify-center ${isListening ? 'bg-red-600 text-white border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)] animate-pulse' : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300 border-white/5'}`} 
+                                    >
+                                        <Icon name="Mic" className="w-4 h-4" />
+                                    </button>
+                                    <input 
+                                        type="text" 
+                                        value={inputMsg} 
+                                        onChange={e => setInputMsg(e.target.value)} 
+                                        onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
+                                        placeholder={isListening ? 'Escuchando voz neural...' : `Escribe a ${currentSpec.name}...`} 
+                                        className="flex-1 bg-slate-950/60 border border-white/5 rounded-2xl px-4 md:px-5 py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-violet-400 transition-all shadow-inner"
+                                    />
+                                    <button 
+                                        onClick={handleSendMessage} 
+                                        disabled={loading || (!inputMsg.trim() && images.length === 0)}
+                                        className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 disabled:opacity-50 disabled:from-slate-700 disabled:to-slate-800 disabled:text-slate-400 text-white px-5 md:px-6 py-3.5 rounded-2xl text-sm font-bold shadow-[0_0_20px_rgba(139,92,246,0.4)] disabled:shadow-none transition-all flex items-center gap-2 shrink-0"
+                                    >
+                                        <span className="hidden sm:inline">Enviar</span> <Icon name="Send" className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </div>
                         </main>
@@ -505,35 +670,58 @@ export default function App() {
                 )}
 
                 {activeTab === 'editor' && (
-                    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden bg-[#020617]">
-                        <div className="w-full lg:w-1/2 flex flex-col border-r border-white/5">
-                            <div className="bg-slate-900/60 p-3 border-b border-white/5 text-xs font-bold text-slate-300"><Icon name="Code2" className="w-4 h-4 text-violet-400 inline mr-2" />Editor PWA</div>
-                            <textarea value={sandboxCode} onChange={(e) => setSandboxCode(e.target.value)} className="flex-1 bg-transparent text-cyan-300 font-mono text-xs p-4 focus:outline-none resize-none" spellCheck="false" />
+                    <div className="flex-1 flex flex-col bg-[#020617] overflow-hidden w-full animate-fade-in">
+                        <div className="bg-slate-900/40 backdrop-blur-2xl border-b border-white/5 p-3 md:p-4 flex items-center justify-between shrink-0 flex-wrap gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-slate-900 p-2 rounded-xl text-violet-400 border border-white/5"><Icon name="Monitor" className="w-5 h-5" /></div>
+                                <div>
+                                    <h2 className="font-bold text-sm text-white">Editor PWA de NeuraLink Studio</h2>
+                                    <p className="text-[10px] text-violet-400">Actualización en tiempo real con Supabase</p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="w-full lg:w-1/2 flex flex-col bg-slate-950">
-                            <div className="bg-slate-900/60 p-3 border-b border-white/5 text-xs font-bold text-slate-300"><Icon name="Monitor" className="w-4 h-4 text-cyan-400 inline mr-2" />Preview</div>
-                            <iframe srcDoc={previewCode} title="Preview" className="w-full h-full border-none bg-white" sandbox="allow-scripts" />
+
+                        <div className="flex-1 grid grid-cols-1 xl:grid-cols-2 overflow-hidden">
+                            <div className="flex flex-col border-r border-white/5 bg-[#020617] relative">
+                                <textarea
+                                    value={sandboxCode}
+                                    onChange={e => setSandboxCode(e.target.value)}
+                                    className="flex-1 bg-[#020617] text-violet-300 font-mono text-xs p-4 pt-12 resize-none focus:outline-none leading-relaxed selection:bg-violet-950 selection:text-violet-100"
+                                    spellCheck={false}
+                                />
+                            </div>
+
+                            <div className="flex flex-col bg-slate-900 relative">
+                                <iframe
+                                    srcDoc={previewCode}
+                                    title="Vista Previa NeuraLink"
+                                    className="w-full h-full border-none"
+                                    sandbox="allow-scripts"
+                                />
+                            </div>
                         </div>
                     </div>
                 )}
             </div>
 
             {showKeyModal && (
-                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-md shadow-2xl">
-                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><Icon name="Key" className="w-6 h-6 text-violet-400" /> API Key de Gemini</h3>
-                        <p className="text-sm text-slate-300 mb-4">Obtén tu clave gratuita en <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" className="text-cyan-400 underline">Google AI Studio</a></p>
-                        <input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="AIzaSy..." className="w-full bg-slate-950 border border-white/10 rounded-2xl px-4 py-3 text-white mb-4 focus:border-violet-500 focus:outline-none font-mono" />
-                        <button onClick={() => setShowKeyModal(false)} className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 rounded-2xl transition">Guardar Clave</button>
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+                    <div className="bg-slate-900 border border-white/5 rounded-3xl p-6 md:p-8 max-w-md w-full backdrop-blur-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] space-y-5">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2"><Icon name="Key" className="w-5 h-5 text-violet-400" /> Configurar Clave API</h3>
+                            <button onClick={() => setShowKeyModal(false)} className="text-slate-400 hover:text-white bg-slate-800 p-1.5 rounded-xl"><Icon name="X" className="w-4 h-4" /></button>
+                        </div>
+                        <input 
+                            type="password"
+                            value={apiKey}
+                            onChange={e => setApiKey(e.target.value)}
+                            placeholder="Pega tu Clave API aquí"
+                            className="w-full bg-slate-950 border border-white/5 rounded-2xl px-4 py-3 text-sm text-violet-300 focus:outline-none focus:border-violet-400 font-mono shadow-inner"
+                        />
+                        <button onClick={() => setShowKeyModal(false)} className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 hover:opacity-90 text-white py-3 rounded-2xl text-sm font-bold shadow-[0_0_20px_rgba(139,92,246,0.4)] transition">Guardar Clave</button>
                     </div>
                 </div>
             )}
-
-            <nav className="xl:hidden bg-[#020617]/95 border-t border-white/5 p-2 flex justify-around items-center fixed bottom-0 w-full z-40 backdrop-blur-xl">
-                <button onClick={() => setActiveTab('home')} className={`p-2 rounded-xl flex flex-col items-center ${activeTab === 'home' ? 'text-cyan-400' : 'text-slate-500'}`}><Icon name="Zap" className="w-5 h-5" /><span className="text-[10px]">Inicio</span></button>
-                <button onClick={() => setActiveTab('chat')} className={`p-2 rounded-xl flex flex-col items-center ${activeTab === 'chat' ? 'text-violet-400' : 'text-slate-500'}`}><Icon name="MessageSquare" className="w-5 h-5" /><span className="text-[10px]">Chat</span></button>
-                <button onClick={() => setActiveTab('editor')} className={`p-2 rounded-xl flex flex-col items-center ${activeTab === 'editor' ? 'text-fuchsia-400' : 'text-slate-500'}`}><Icon name="Code2" className="w-5 h-5" /><span className="text-[10px]">Forja</span></button>
-            </nav>
         </div>
     );
 }
